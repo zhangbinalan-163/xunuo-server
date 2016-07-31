@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName">
+			<value>${db.driverClassName}</value>
+		</property>
+		<property name="url">
+			<value>${db.url}</value>
+		</property>
+		<property name="username">
+			<value>${db.username}</value>
+		</property>
+		<property name="password">
+			<value>${db.password}</value>
+		</property>
+		<!-- 最大连接数 -->
+		<property name="maxActive">
+			<value>${db.pool.maxsize}</value>
+		</property>
+		<!-- 初始化连接数 -->
+		<property name="initialSize">
+			<value>${db.pool.initsize}</value>
+		</property>
+		<!-- 最大空闲连接数 -->
+		<property name="maxIdle">
+			<value>${db.pool.maxidle}</value>
+		</property>
+		<!-- 最小空闲连接数 -->
+		<property name="minIdle">
+			<value>${db.pool.minidle}</value>
+		</property>
+	</bean>
+
+	<!-- 配置SessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="mapperLocations" value="classpath*:com/dabo/xunuo/dao/*.xml" />
+	</bean>
+
+	<!-- 声明式事务管理 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    
+	<!-- mapper定义 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.dabo.xunuo.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+</beans>
