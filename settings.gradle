@@ -1,0 +1,4 @@
+rootProject.name = 'xunuo-server'
+
+include 'xunuo-site'
+

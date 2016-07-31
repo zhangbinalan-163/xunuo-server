@@ -1,0 +1,32 @@
+def vJavaLang = '1.8'
+
+def javaProjects = [project(':xunuo-site')]
+def bootProjects = [project(':xunuo-site')]
+
+configure(allprojects) {
+    apply plugin: 'idea'
+}
+
+configure(javaProjects) {
+    apply plugin: 'java'
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+    targetCompatibility = vJavaLang
+    sourceCompatibility = vJavaLang
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+configure(bootProjects) {
+    apply plugin: 'war'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
