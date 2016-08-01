@@ -7,8 +7,17 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <File>/var/log/app/tomcat/xunuo-server.log</File>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %4p %logger{29}.%M - %msg%n%ex{10}</pattern>
+        </encoder>>
+    </appender>
+
     <root level="DEBUG">
-         <appender-ref ref="STDOUT" />
+         <appender-ref ref="FILE" />
      </root>
 
  </configuration>
