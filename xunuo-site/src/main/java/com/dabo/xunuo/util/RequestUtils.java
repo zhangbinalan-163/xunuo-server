@@ -4,6 +4,9 @@ import com.dabo.xunuo.common.Constants;
 import com.dabo.xunuo.common.exception.SysException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 请求的工具类
@@ -39,4 +42,24 @@ public class RequestUtils {
         }
         return str;
     }
+
+    /**
+     * 获取请求的所有非空参数
+     * @param request
+     * @return
+     */
+    public static Map<String,String> getNotEmptyParam(HttpServletRequest request){
+        Map<String,String> map = new HashMap();
+        Enumeration paramNames = request.getParameterNames();
+
+        while (paramNames.hasMoreElements()) {
+            String paramName = (String) paramNames.nextElement();
+            String value=request.getParameter(paramName);
+            if(!StringUtils.isEmpty(value)){
+                map.put(paramName,value);
+            }
+        }
+        return map;
+    }
+
 }

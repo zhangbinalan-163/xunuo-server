@@ -33,7 +33,7 @@ public abstract class BaseController {
         //记录当前异常信息
         RequestContext.exception(exception);
 
-        String traceId = UUID.randomUUID().toString();
+        String traceId = RequestContext.getTraceId();
         String uri = httpRequest.getRequestURI();
         LOGGER.error("[{}]request fail,traceId:{}", uri,traceId, exception);
 

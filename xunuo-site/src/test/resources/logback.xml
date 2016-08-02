@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!--调试使用STDOUT,线上运行需要指定日志文件,并设置文件滚动策略-->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <File>/var/log/app/tomcat/xunuo-server.log</File>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %4p %logger{29}.%M - %msg%n%ex{10}</pattern>
+        </encoder>>
+    </appender>
+
+    <root level="DEBUG">
+         <appender-ref ref="STDOUT" />
+     </root>
+
+ </configuration>
