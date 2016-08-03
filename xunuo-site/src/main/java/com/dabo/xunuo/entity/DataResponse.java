@@ -1,4 +1,4 @@
-package com.dabo.xunuo.dao;
+package com.dabo.xunuo.entity;
 
 /**
  * 接口响应实体

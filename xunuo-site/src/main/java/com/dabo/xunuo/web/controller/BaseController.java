@@ -1,7 +1,7 @@
 package com.dabo.xunuo.web.controller;
 
 import com.dabo.xunuo.common.Constants;
-import com.dabo.xunuo.dao.DataResponse;
+import com.dabo.xunuo.entity.DataResponse;
 import com.dabo.xunuo.util.JsonUtils;
 import com.dabo.xunuo.util.ResponseUtils;
 import com.dabo.xunuo.web.vo.RequestContext;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * 基本的处理器，封装一些通用功能

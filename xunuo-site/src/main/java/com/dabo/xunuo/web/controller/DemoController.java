@@ -36,4 +36,16 @@ public class DemoController extends BaseController{
         //请求结果的拼装
         return createSuccessResponse(user);
     }
+
+    /**
+     * 测试sign
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/sign")
+    @ResponseBody
+    public String sign() throws Exception {
+        //请求结果的拼装
+        return createSuccessResponse(null);
+    }
 }

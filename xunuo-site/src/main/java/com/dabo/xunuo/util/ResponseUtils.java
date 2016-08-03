@@ -2,7 +2,7 @@ package com.dabo.xunuo.util;
 
 import com.dabo.xunuo.common.Constants;
 import com.dabo.xunuo.common.exception.SysException;
-import com.dabo.xunuo.dao.DataResponse;
+import com.dabo.xunuo.entity.DataResponse;
 import com.dabo.xunuo.web.vo.RequestContext;
 
 import javax.servlet.http.HttpServletResponse;

@@ -4,8 +4,6 @@ import com.dabo.xunuo.common.Constants;
 import com.dabo.xunuo.common.exception.SysException;
 import com.dabo.xunuo.util.RequestUtils;
 import com.dabo.xunuo.util.SignUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,8 +15,6 @@ import java.util.Map;
  * 将请求中除了app_key以为的所有非空参数按照key字典排序,进行SHA1签名
  */
 public class SignVerifyFilter extends BaseFilter {
-    private static Logger LOGGER = LoggerFactory.getLogger(SignVerifyFilter.class);
-
     private static final String PARAM_APP_KEY_NAME="app_key";
 
     private static final String PARAM_SIGN_NAME="sign";
@@ -35,8 +31,9 @@ public class SignVerifyFilter extends BaseFilter {
         String app_secret=Constants.APP_SECRET;
 
         String signParam=notEmptyParamMap.get(PARAM_SIGN_NAME);
-        //去掉sign参数
+        //去掉sign参数、app_secret参数
         notEmptyParamMap.remove(PARAM_SIGN_NAME);
+        notEmptyParamMap.remove(PARAM_APP_KEY_NAME);
         //签名校验
         String righSign=SignUtils.generateSign(notEmptyParamMap, app_key, app_secret);
         if(righSign==null||signParam==null||!signParam.equals(righSign)){

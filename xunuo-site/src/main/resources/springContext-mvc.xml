@@ -38,6 +38,10 @@
         <!--权限检查过滤器-->
 
         <!--签名检查过滤器-->
+        <mvc:interceptor>
+            <mvc:mapping path="/demo/sign" />
+            <bean class="com.dabo.xunuo.web.filter.SignVerifyFilter"/>
+        </mvc:interceptor>
 
     </mvc:interceptors>
 

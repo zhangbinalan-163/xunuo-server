@@ -1,13 +1,13 @@
 package com.dabo.xunuo.web;
 
-import com.dabo.xunuo.dao.DataResponse;
+import com.dabo.xunuo.common.Constants;
+import com.dabo.xunuo.entity.DataResponse;
 import com.dabo.xunuo.util.JsonUtils;
+import com.dabo.xunuo.util.SignUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
@@ -19,6 +19,9 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -45,16 +48,27 @@ public class DemoControllerTest {
     }
 
     @Test
-    public void infoTest() throws Exception {
+    public void signFilterTest() throws Exception {
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("format", "json");
+        paramMap.put("city", "上海");
+        paramMap.put("latitude", "31.21524");
+        paramMap.put("longitude", "121.420033");
+        paramMap.put("radius", "2000");
 
         MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.get("/demo/info")
-                        .param("phone", "18069812065")
-                        .header("x-timebuy-sid", "d6089681f79c7627bbac829307e041a7");
+                MockMvcRequestBuilders.get("/demo/sign")
+                        .param("format", "json")
+                        .param("city", "上海")
+                        .param("latitude", "31.21524")
+                        .param("longitude", "121.420033")
+                        .param("radius", "2000")
+                        .param("app_key", Constants.APP_KEY)
+                        .param("sign", SignUtils.generateSign(paramMap,Constants.APP_KEY,Constants.APP_SECRET));
         MvcResult result = mockMvc.perform(request)
                 .andReturn();
         String resultContent=result.getResponse().getContentAsString();
         DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
-        Assert.assertNotNull(dataResponse);
+        Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
     }
 }

@@ -9,6 +9,8 @@
     <resultMap id="DATA" type="com.dabo.xunuo.entity.User">
         <id property="id" column="id" />
         <result property="phone" column="phone"/>
+        <result property="source" column="source"/>
+        <result property="bindOpenId" column="bind_open_id"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
 
@@ -24,6 +26,14 @@
     <select id="getByPhone" resultMap="DATA">
         SELECT *
         FROM <include refid="TABLE"/>
-        where phone=#{phone}
+        WHERE phone=#{phone}
     </select>
+
+    <select id="getByOpenId" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        WHERE source=#{source}
+        AND bind_open_id=#{openId}
+    </select>
+
 </mapper>

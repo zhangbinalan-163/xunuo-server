@@ -7,8 +7,17 @@ import java.util.Date;
  * Created by zhangbin on 16/7/31.
  */
 public class User {
+    //注册来源 0-手机+验证码
+    public static final int SOURCE_OUR=0;
+    //注册来源 微博
+    public static final int SOURCE_WEIBO=2;
+    //注册来源 微信
+    public static final int SOURCE_WECHAT=1;
+
     private long id;
     private String phone;
+    private int source;//注册来源 0-手机+验证码  1-微信 2-微博
+    private String bindOpenId;//外部系统的openId source为1/2是有效
     private Date createTime;
 
     public long getId() {
@@ -33,5 +42,21 @@ public class User {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public int getSource() {
+        return source;
+    }
+
+    public void setSource(int source) {
+        this.source = source;
+    }
+
+    public String getBindOpenId() {
+        return bindOpenId;
+    }
+
+    public void setBindOpenId(String bindOpenId) {
+        this.bindOpenId = bindOpenId;
     }
 }
