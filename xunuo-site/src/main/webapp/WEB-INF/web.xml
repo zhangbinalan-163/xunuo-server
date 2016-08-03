@@ -29,4 +29,7 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+    <listener>
+        <listener-class>com.dabo.xunuo.listener.XunoListener</listener-class>
+    </listener>
 </web-app>
