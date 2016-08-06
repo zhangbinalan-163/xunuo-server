@@ -14,6 +14,7 @@
         <result property="createTime" column="create_time"/>
     </resultMap>
 
+
     <!--新增-->
     <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
         INSERT INTO
@@ -34,6 +35,12 @@
         FROM <include refid="TABLE"/>
         WHERE source=#{source}
         AND bind_open_id=#{openId}
+    </select>
+
+    <select id="getById" parameterType="Long" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        WHERE id=#{keyId}
     </select>
 
 </mapper>

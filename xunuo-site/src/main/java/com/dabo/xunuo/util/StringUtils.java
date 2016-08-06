@@ -3,6 +3,8 @@ package com.dabo.xunuo.util;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 字符创工具类
@@ -52,5 +54,29 @@ public class StringUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 是否是合法手机号
+     * @param mobile
+     * @return
+     */
+    public static boolean isLegalMobile(String mobile) {
+        if (mobile == null) {
+            return false;
+        }
+        Pattern p = Pattern.compile("^(13|14|15|18|17)\\d{9}$");
+        Matcher m = p.matcher(mobile);
+        boolean b = m.matches();
+        return b;
+    }
+
+    /**
+     * 生成验证码
+     * @return
+     */
+    public static String genCode() {
+        int code = (int)(Math.random() * 899999 + 100000);
+        return String.valueOf(code);
     }
 }

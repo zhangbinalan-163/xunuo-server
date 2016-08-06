@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dabo.xunuo.dao.DeviceInfoMapper">
+
+    <sql id="TABLE">t_device_info</sql>
+
+    <resultMap id="DATA" type="com.dabo.xunuo.entity.DeviceInfo">
+        <id property="id" column="id" />
+        <result property="deviceId" column="device_id"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
+        INSERT INTO
+        <include refid="TABLE"/>
+        (device_id,create_time)
+        VALUES
+        (#{entity.deviceId},#{entity.createTime})
+    </insert>
+
+    <select id="getByDeviceId" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        WHERE device_id=#{deviceId}
+    </select>
+
+</mapper>

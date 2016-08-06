@@ -34,7 +34,7 @@ public abstract class BaseController {
 
         String traceId = RequestContext.getTraceId();
         String uri = httpRequest.getRequestURI();
-        LOGGER.error("[{}]request fail,traceId:{}", uri,traceId, exception);
+        LOGGER.error("[{}]request fail,traceId:{}", uri, traceId, exception);
 
         //处理异常信息，并输出
         try {
@@ -53,8 +53,16 @@ public abstract class BaseController {
         DataResponse dataResponse=new DataResponse();
         dataResponse.setTraceId(RequestContext.getTraceId());
         dataResponse.setData(data);
-        dataResponse.setErrMsg("success");
+        dataResponse.setErrMsg(Constants.DEFAULT_MSG_SUCCESS);
         dataResponse.setErrorCode(Constants.DEFAULT_CODE_SUCCESS);
         return JsonUtils.fromObject(dataResponse);
+    }
+
+    /**
+     * 产生成功的响应信息
+     * @return
+     */
+    protected String createDefaultSuccessResponse(){
+       return createSuccessResponse(null);
     }
 }

@@ -1,6 +1,5 @@
 package com.dabo.xunuo.entity;
 
-import java.util.Date;
 
 /**
  * 用户信息实体
@@ -18,7 +17,7 @@ public class User {
     private String phone;
     private int source;//注册来源 0-手机+验证码  1-微信 2-微博
     private String bindOpenId;//外部系统的openId source为1/2是有效
-    private Date createTime;
+    private long createTime;
 
     public long getId() {
         return id;
@@ -36,11 +35,11 @@ public class User {
         this.phone = phone;
     }
 
-    public Date getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Date createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 

@@ -8,6 +8,7 @@ import com.dabo.xunuo.entity.UserCertificate;
 import com.dabo.xunuo.event.impl.UserRegEvent;
 import com.dabo.xunuo.service.BaseSerivce;
 import com.dabo.xunuo.service.IUserService;
+import com.dabo.xunuo.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserServiceImpl extends BaseSerivce implements IUserService {
-
     @Autowired
     private UserMapper userMapper;
 
@@ -25,16 +25,16 @@ public class UserServiceImpl extends BaseSerivce implements IUserService {
 
     @Override
     public User getByPhone(String phone) throws SysException {
-        try {
-            return userMapper.getByPhone(phone);
-        }catch (Exception e){
-            throw new SysException("查询用户信息失败",e);
-        }
+        return userMapper.getByPhone(phone);
+    }
+
+    @Override
+    public User getByUserId(long userId) throws SysException {
+        return userMapper.getById(userId);
     }
 
     @Override
     public void createUser(User user, UserCertificate userCertificate) throws SysException {
-        //TODO 是否需要事务
         //新建用户
         userMapper.insert(user);
         //保存用户密码
@@ -42,5 +42,10 @@ public class UserServiceImpl extends BaseSerivce implements IUserService {
         //发布用户注册事件
         UserRegEvent userRegEvent=new UserRegEvent(user);
         eventBus.post(userRegEvent);
+    }
+
+    @Override
+    public UserCertificate getUserCertificate(User user) throws SysException {
+        return userCertificateMapper.getByUserId(user.getId());
     }
 }

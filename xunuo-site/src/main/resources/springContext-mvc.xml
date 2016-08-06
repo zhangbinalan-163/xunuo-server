@@ -29,18 +29,23 @@
             <mvc:mapping path="/**" />
             <bean class="com.dabo.xunuo.web.filter.RequestStatisFilter"/>
         </mvc:interceptor>
-        <!--HEADER解析过滤器-->
+
+        <!--解析过滤器-->
         <mvc:interceptor>
             <mvc:mapping path="/**" />
-            <bean class="com.dabo.xunuo.web.filter.HeaderParseFilter"/>
+            <bean class="com.dabo.xunuo.web.filter.RequestParseFilter"/>
         </mvc:interceptor>
-
-        <!--权限检查过滤器-->
 
         <!--签名检查过滤器-->
         <mvc:interceptor>
-            <mvc:mapping path="/demo/sign" />
+            <mvc:mapping path="/**" />
             <bean class="com.dabo.xunuo.web.filter.SignVerifyFilter"/>
+        </mvc:interceptor>
+
+        <!--权限检查过滤器-->
+        <mvc:interceptor>
+            <mvc:mapping path="/user/**" />
+            <bean class="com.dabo.xunuo.web.filter.LoginFilter"/>
         </mvc:interceptor>
 
     </mvc:interceptors>

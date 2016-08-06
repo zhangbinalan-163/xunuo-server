@@ -4,6 +4,7 @@ import com.dabo.xunuo.common.Constants;
 import com.dabo.xunuo.entity.DataResponse;
 import com.dabo.xunuo.util.JsonUtils;
 import com.dabo.xunuo.util.SignUtils;
+import com.dabo.xunuo.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,7 @@ import java.util.Map;
 
 
 /**
- * WEB接口测试
+ * SSO接口测试
  * Created by zhangbin on 16/8/2.
  */
 
@@ -35,12 +36,17 @@ import java.util.Map;
         @ContextConfiguration(name = "parent",locations = {"classpath*:springContext-core.xml","classpath*:springContext-dao.xml"}),
         @ContextConfiguration(name = "child", locations = "classpath*:springContext-mvc.xml")
 })
-public class DemoControllerTest {
+public class UserControllerTest {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
+
+    private String deviceId="my_device_id";
+    private String clientType="IOS";
+    private String version="1.1.1";
+    private String sid="KM4VgBDmOx1lRtwL8nG5+9wcvAny8agueu+63eU/Muc=";
 
     @Before
     public void setUp() {
@@ -48,27 +54,29 @@ public class DemoControllerTest {
     }
 
     @Test
-    public void signFilterTest() throws Exception {
+    public void userInfoTest() throws Exception {
+        long timestamp=System.currentTimeMillis();
+        String nonce="123456";
+
         Map<String, String> paramMap = new HashMap<>();
-        paramMap.put("format", "json");
-        paramMap.put("city", "上海");
-        paramMap.put("latitude", "31.21524");
-        paramMap.put("longitude", "121.420033");
-        paramMap.put("radius", "2000");
+        paramMap.put("nonce", nonce);
+        paramMap.put("timestamp", String.valueOf(timestamp));
 
         MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.get("/demo/sign")
-                        .param("format", "json")
-                        .param("city", "上海")
-                        .param("latitude", "31.21524")
-                        .param("longitude", "121.420033")
-                        .param("radius", "2000")
+                MockMvcRequestBuilders.get("/user/info")
+                        .header("X-XN-CLIENT", clientType)
+                        .header("X-XN-CLIENT-V",version)
+                        .header("X-XN-DEVICEID",deviceId)
+                        .header("X-XN-SID",sid)
+                        .param("nonce", nonce)
+                        .param("timestamp", String.valueOf(timestamp))
                         .param("app_key", Constants.APP_KEY)
-                        .param("sign", SignUtils.generateSign(paramMap,Constants.APP_KEY,Constants.APP_SECRET));
+                .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
         MvcResult result = mockMvc.perform(request)
                 .andReturn();
         String resultContent=result.getResponse().getContentAsString();
         DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
+        System.out.println(JsonUtils.fromObject(dataResponse));
         Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
     }
 }

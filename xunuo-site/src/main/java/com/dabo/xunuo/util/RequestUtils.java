@@ -15,13 +15,13 @@ public class RequestUtils {
 
     /**
      * 从请求获取KEY的参数,如果为空抛出异常
-     * @param httpServletRequest
+     * @param paramMap
      * @param key
      * @return
      * @throws SysException
      */
-    public static String getString(HttpServletRequest httpServletRequest,String key) throws SysException {
-        String str = httpServletRequest.getParameter(key);
+    public static String getString(Map<String,String> paramMap,String key) throws SysException {
+        String str = paramMap.get(key);
         if (StringUtils.isEmpty(str)) {
             throw new SysException("参数为空或格式错误:"+key,Constants.ERROR_CODE_INVALID_PARAM);
         }
@@ -30,19 +30,76 @@ public class RequestUtils {
 
     /**
      * 从请求获取KEY的参数,允许为空,如果为空返回默认值
-     * @param httpServletRequest
+     * @param paramMap
+     * @param key
+     * @param defau
+     * @return
+     */
+    public static String getString(Map<String,String> paramMap,String key, String defau) {
+        String str = paramMap.getOrDefault(key, defau);
+        return str;
+    }
+
+    /**
+     * 从请求获取KEY的参数,如果为空抛出异常
+     * @param paramMap
      * @param key
      * @return
      * @throws SysException
      */
-    public static String getString(HttpServletRequest httpServletRequest,String key, String defau) {
-        String str = httpServletRequest.getParameter(key);
-        if(StringUtils.isEmpty(str)) {
-            return defau;
+    public static int getInt(Map<String,String> paramMap,String key) throws SysException {
+        String str = paramMap.get(key);
+        try {
+            return Integer.parseInt(str);
+        }catch (Exception e){
+            throw new SysException("参数为空或格式错误:"+key,Constants.ERROR_CODE_INVALID_PARAM);
         }
-        return str;
     }
 
+    /**
+     * 从请求获取KEY的int参数,并检查范围
+     * @param paramMap
+     * @param key
+     * @return
+     * @throws SysException
+     */
+    public static int getInt(Map<String,String> paramMap,String key,int min,int max) throws SysException {
+        int value=getInt(paramMap, key);
+        if(value<min||value>max){
+            throw new SysException("参数为空或格式错误:"+key,Constants.ERROR_CODE_INVALID_PARAM);
+        }
+        return value;
+    }
+    /**
+     * 从请求获取KEY的参数,如果为空抛出异常
+     * @param paramMap
+     * @param key
+     * @return
+     * @throws SysException
+     */
+    public static long getLong(Map<String,String> paramMap,String key) throws SysException {
+        String str = paramMap.get(key);
+        try {
+            return Long.parseLong(str);
+        }catch (Exception e){
+            throw new SysException("参数为空或格式错误:"+key,Constants.ERROR_CODE_INVALID_PARAM);
+        }
+    }
+
+    /**
+     * 获取手机号参数并校验
+     * @param paramMap
+     * @param key
+     * @return
+     * @throws SysException
+     */
+    public static String getMobileString(Map<String,String> paramMap,String key) throws SysException {
+        String mobile=getString(paramMap, key);
+        if(!StringUtils.isLegalMobile(mobile)){
+            throw new SysException("手机号格式非法"+key,Constants.ERROR_CODE_INVALID_PARAM);
+        }
+        return mobile;
+    }
     /**
      * 获取请求的所有非空参数
      * @param request
@@ -62,4 +119,19 @@ public class RequestUtils {
         return map;
     }
 
+    public static String getHeader(HttpServletRequest request,String headerName) throws SysException {
+        String value=request.getHeader(headerName);
+        if(StringUtils.isEmpty(value)){
+            throw new SysException("HEADER为空或格式错误:"+headerName,Constants.ERROR_CODE_INVALID_PARAM);
+        }
+        return value;
+    }
+
+    public static String getHeader(HttpServletRequest request,String headerName,String defaultValue) throws SysException {
+        String value=request.getHeader(headerName);
+        if(StringUtils.isEmpty(value)){
+            return defaultValue;
+        }
+        return value;
+    }
 }
