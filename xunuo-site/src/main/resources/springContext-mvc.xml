@@ -45,6 +45,7 @@
         <!--权限检查过滤器-->
         <mvc:interceptor>
             <mvc:mapping path="/user/**" />
+            <mvc:mapping path="/note/**"/>
             <bean class="com.dabo.xunuo.web.filter.LoginFilter"/>
         </mvc:interceptor>
 

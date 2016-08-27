@@ -56,7 +56,7 @@ CREATE TABLE `t_device_info` (
   `create_time` bigint(20) NOT NULL COMMENT '绑定时间',
   PRIMARY KEY (`id`),
   KEY `DID` (`device_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 CREATE TABLE `t_event` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -95,8 +95,10 @@ CREATE TABLE `t_note` (
   `content` varchar(512) NOT NULL,
   `create_time` bigint(20) NOT NULL,
   `user_id` bigint(20) NOT NULL COMMENT '用户ID',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `del_flag` tinyint(1) NOT NULL DEFAULT '0' COMMENT '删除状态 0-正常 1-已删除',
+  PRIMARY KEY (`id`),
+  KEY `USER_DEL` (`user_id`,`del_flag`,`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 CREATE TABLE `t_sms_code` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -125,3 +127,4 @@ CREATE TABLE `t_user_certificate` (
   `update_time` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+SELECT * FROM d_xunuo.t_note;

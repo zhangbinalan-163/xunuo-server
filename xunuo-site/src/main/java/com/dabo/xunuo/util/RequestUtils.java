@@ -57,6 +57,21 @@ public class RequestUtils {
     }
 
     /**
+     * 从请求获取KEY的参数,如果为空返回默认值
+     * @param paramMap
+     * @param key
+     * @return
+     * @throws SysException
+     */
+    public static int getInt(Map<String,String> paramMap,String key,int defau) throws SysException {
+        String str = paramMap.get(key);
+        try {
+            return Integer.parseInt(str);
+        }catch (Exception e){
+            return defau;
+        }
+    }
+    /**
      * 从请求获取KEY的int参数,并检查范围
      * @param paramMap
      * @param key

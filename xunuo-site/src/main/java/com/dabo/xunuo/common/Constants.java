@@ -38,4 +38,8 @@ public class Constants {
     public static final String SECRET_KEY="f141c6795225cae6014b228e42d13bbc";
 
 
+    public static final int DEL_FLAG_NORMAL=0;
+
+    public static final int DEL_FLAG_DELETE=1;
+
 }
