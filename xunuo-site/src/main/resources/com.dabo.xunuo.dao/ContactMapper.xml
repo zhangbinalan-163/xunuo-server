@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dabo.xunuo.dao.ContactMapper">
+
+    <sql id="TABLE">t_contact</sql>
+
+    <resultMap id="DATA" type="com.dabo.xunuo.entity.Contact">
+        <id property="id" column="id" />
+        <result property="name" column="name"/>
+        <result property="birthday" column="birthday"/>
+        <result property="phone" column="phone"/>
+        <result property="remark" column="remark"/>
+        <result property="figure_id" column="figure_id"/>
+    </resultMap>
+
+
+    <!--新增-->
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
+        INSERT INTO
+        <include refid="TABLE"/>
+        (phone,create_time)
+        VALUES
+        (#{entity.phone},#{entity.createTime})
+    </insert>
+
+   <select id="getContactList" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        where user_id=#{userId} 
+         <if test="contacttypeid!=null">
+            and contact_type_id=#{contacttypeid} </if>
+        <if test="orderkey!=null">
+               order by ${orderkey} desc </if>
+    </select>
+
+   
+
+</mapper>
