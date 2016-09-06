@@ -5,6 +5,10 @@ package com.dabo.xunuo.entity;
  * Created by zhangbin on 16/8/28.
  */
 public class UserEvent {
+
+    public static final int REMIND_INTERVAL_TYPE_DAY=0;
+    public static final int REMIND_INTERVAL_TYPE_WEEK=1;
+
     private long id;
     private long userId;//事件的所有者
     private String name;

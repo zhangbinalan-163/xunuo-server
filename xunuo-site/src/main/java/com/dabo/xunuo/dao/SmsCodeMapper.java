@@ -3,6 +3,8 @@ package com.dabo.xunuo.dao;
 import com.dabo.xunuo.entity.SmsCode;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 
 /**
  * 验证码信息Mapper
@@ -16,5 +18,12 @@ public interface SmsCodeMapper extends BaseMapper<Long,SmsCode>{
      * @return
      */
     SmsCode getByMobile(@Param("smsType")int type,@Param("mobile")String mobile);
+
+    /**
+     * 获取create_time+validInterval<validEndTime的验证码ID
+     * @param validEndTime
+     * @return
+     */
+    List<Long> getByValidTime(@Param("validEndTime")long validEndTime);
 }
 

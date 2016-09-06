@@ -42,8 +42,8 @@
         SELECT *
         FROM <include refid="TABLE"/>
         WHERE user_id=#{userId}
-        AND
-        event_time <![CDATA[>=]]>  #{eventTime}
+        AND event_time <![CDATA[>=]]>  #{eventTime}
+        ORDER BY ${field} ${direction}
         <if test="rowBounds!=null">
             LIMIT #{rowBounds.offSet}, #{rowBounds.limit}
         </if>

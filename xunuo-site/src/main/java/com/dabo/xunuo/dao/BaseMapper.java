@@ -38,7 +38,7 @@ public interface BaseMapper<K,T> {
      * 删除实体数据,根据ID
      * @param keyIdList
      */
-    void deleteBatch(List<K> keyIdList);
+    void deleteBatch(@Param("keyIdList") List<K> keyIdList);
 
     /**
      * 根据ID获取实体数据
@@ -52,5 +52,5 @@ public interface BaseMapper<K,T> {
      * @param keyIdList
      * @return
      */
-    List<T> getListByIds(List<K> keyIdList);
+    List<T> getListByIds(@Param("keyIdList")List<K> keyIdList);
 }

@@ -9,8 +9,10 @@ import com.dabo.xunuo.service.ISmsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
- *
+ * 短信验证码业务
  * Created by zhangbin on 16/8/5.
  */
 @Service
@@ -39,5 +41,17 @@ public class SmsServiceImpl extends BaseSerivce implements ISmsService{
             }
         }
         throw new SysException("验证码无效", Constants.ERROR_CODE_SMS_CODE_INVALID);
+    }
+
+    @Override
+    public List<Long> getInvalidSmsCodeId() throws SysException {
+        //获取当前时间已经失效的验证码
+        long currentTime = System.currentTimeMillis();
+        return smsCodeMapper.getByValidTime(currentTime);
+    }
+
+    @Override
+    public void deleteSmsCode(List<Long> codeIdList) throws SysException {
+        smsCodeMapper.deleteBatch(codeIdList);
     }
 }

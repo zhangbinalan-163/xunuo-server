@@ -21,6 +21,8 @@ public interface UserEventMapper extends BaseMapper<Long,UserEvent>{
      */
     List<UserEvent> getEventByUser(@Param("userId") long userId,
                                    @Param("eventTime") long eventTime,
+                                   @Param("field") String field,
+                                   @Param("direction") String direction,
                                    @Param("rowBounds") RowBounds rowBounds);
 
     /**

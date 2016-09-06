@@ -63,7 +63,7 @@ public class SsoController extends BaseController{
 
         }else if(sourceType == User.SOURCE_WECHAT||sourceType == User.SOURCE_WEIBO){
             String accessToken=RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "access_token");
-
+            //TODO 根据token去获取用户的openid
         }
         //
         return createDefaultSuccessResponse();

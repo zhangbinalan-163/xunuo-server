@@ -4,6 +4,9 @@ import com.dabo.xunuo.common.Constants;
 import com.dabo.xunuo.common.exception.SysException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,6 +74,7 @@ public class RequestUtils {
             return defau;
         }
     }
+
     /**
      * 从请求获取KEY的int参数,并检查范围
      * @param paramMap
@@ -102,6 +106,22 @@ public class RequestUtils {
     }
 
     /**
+     * 从请求获取KEY的参数
+     * @param paramMap
+     * @param key
+     * @return
+     * @throws SysException
+     */
+    public static long getLong(Map<String,String> paramMap,String key,long defau) throws SysException {
+        String str = paramMap.get(key);
+        try {
+            return Long.parseLong(str);
+        }catch (Exception e){
+            return defau;
+        }
+    }
+
+    /**
      * 获取手机号参数并校验
      * @param paramMap
      * @param key
@@ -114,6 +134,26 @@ public class RequestUtils {
             throw new SysException("手机号格式非法"+key,Constants.ERROR_CODE_INVALID_PARAM);
         }
         return mobile;
+    }
+
+    /**
+     * 从请求获取KEY的日期类型参数,如果为空抛出异常
+     * @param paramMap
+     * @param key
+     * @return
+     * @throws SysException
+     */
+    public static Date getDate(Map<String,String> paramMap, String key ,String format) throws SysException {
+        String str = paramMap.get(key);
+        if (StringUtils.isEmpty(str)) {
+            throw new SysException("参数为空或格式错误:"+key,Constants.ERROR_CODE_INVALID_PARAM);
+        }
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat(format);
+        try {
+            return simpleDateFormat.parse(str);
+        } catch (ParseException e) {
+            throw new SysException("参数为空或格式错误:"+key,Constants.ERROR_CODE_INVALID_PARAM);
+        }
     }
     /**
      * 获取请求的所有非空参数

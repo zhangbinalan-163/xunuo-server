@@ -35,4 +35,18 @@
         WHERE id=#{keyId}
     </delete>
 
+    <delete id="deleteBatch">
+        DELETE FROM <include refid="TABLE"/>
+        WHERE id IN
+        <foreach item="item" index="index" collection="targetIdList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="getByValidTime" resultType="Long">
+        SELECT id
+        FROM <include refid="TABLE"/>
+        WHERE create_time + valid_interval <![CDATA[<]]> #{validEndTime}
+    </select>
+
 </mapper>
