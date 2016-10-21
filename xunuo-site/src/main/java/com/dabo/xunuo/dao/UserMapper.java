@@ -23,5 +23,12 @@ public interface UserMapper extends BaseMapper<Long,User>{
      * @return
      */
     User getByOpenId(@Param("source")int source,@Param("openId")String openId);
+
+    /**
+     * 修改accessToken
+     * @param accessToken
+     * @param userId
+     */
+    void updateAccessToken(@Param("accessToken")String accessToken,@Param("userId")long userId);
 }
 

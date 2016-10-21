@@ -102,4 +102,22 @@ public class SsoController extends BaseController{
 
         return createDefaultSuccessResponse();
     }
+
+    /**
+     * 修改密码发手机验证码
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/login/other")
+    @ResponseBody
+    public String loginByOther() throws Exception {
+        //参数的解析与校验
+        String openId=RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "open_id");
+        String accessToken=RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "access_token");
+        int sourceType=RequestUtils.getInt(RequestContext.getNotEmptyParamMap(), "source_type");
+        //登录
+        ssoService.loginByOther(sourceType,accessToken,openId,RequestContext.getDeviceId());
+
+        return createDefaultSuccessResponse();
+    }
 }

@@ -41,7 +41,7 @@ public class UserServiceImpl extends BaseSerivce implements IUserService {
         user.setCreateTime(System.currentTimeMillis());
         user.setSource(User.SOURCE_OUR);
         user.setBindOpenId("");
-        user.setPhone(phone);
+        user.setAccessToken("");
         userMapper.insert(user);
         //保存用户密码
         String salt=StringUtils.genCode();
@@ -81,5 +81,29 @@ public class UserServiceImpl extends BaseSerivce implements IUserService {
             userCertificate.setUpdateTime(System.currentTimeMillis());
             userCertificateMapper.insert(userCertificate);
         }
+    }
+
+    @Override
+    public User getByOpenId(String openId, int sourceType) throws SysException {
+        return userMapper.getByOpenId(sourceType,openId);
+    }
+
+    @Override
+    public long createUser(int sourceType, String openId,String accessToken) throws SysException {
+        //新建用户
+        User user=new User();
+        user.setPhone("");
+        user.setCreateTime(System.currentTimeMillis());
+        user.setSource(sourceType);
+        user.setBindOpenId(openId);
+        user.setAccessToken(accessToken);
+        userMapper.insert(user);
+
+        return user.getId();
+    }
+
+    @Override
+    public void updateAccessToken(String accessToken, long userId) throws SysException {
+        userMapper.updateAccessToken(accessToken,userId);
     }
 }

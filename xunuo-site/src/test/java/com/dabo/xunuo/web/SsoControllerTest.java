@@ -56,7 +56,7 @@ public class SsoControllerTest {
     public void sendRegCodeTest() throws Exception {
         long timestamp=System.currentTimeMillis();
         String nonce="123456";
-        String phone="18069812065";
+        String phone="18667009512";
 
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("phone", phone);

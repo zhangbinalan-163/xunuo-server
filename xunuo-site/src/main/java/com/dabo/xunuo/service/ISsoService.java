@@ -33,12 +33,13 @@ public interface ISsoService {
     void regUser(String phone,String password,String code,String deviceId) throws SysException;
 
     /**
-     *
+     * 第三方账号登录
      * @param sourceType
      * @param accessToken
+     * @param openId
      * @throws SysException
      */
-    User regUserByAccessToken(int sourceType,String accessToken) throws SysException;
+    void loginByOther(int sourceType,String accessToken,String openId, String deviceId) throws SysException;
 
     /**
      * 用户名+密码登录

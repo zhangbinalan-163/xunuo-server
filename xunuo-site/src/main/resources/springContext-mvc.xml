@@ -60,7 +60,6 @@
             <mvc:mapping path="/note/**"/>
             <mvc:mapping path="/event/**"/>
             <mvc:mapping path="/contact/**"/>
-            <mvc:mapping path="/common/img/upload"/>
             <bean class="com.dabo.xunuo.web.filter.LoginFilter"/>
         </mvc:interceptor>
 

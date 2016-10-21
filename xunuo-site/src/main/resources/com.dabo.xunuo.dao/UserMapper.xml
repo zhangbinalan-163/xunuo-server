@@ -12,6 +12,7 @@
         <result property="source" column="source"/>
         <result property="bindOpenId" column="bind_open_id"/>
         <result property="createTime" column="create_time"/>
+        <result property="accessToken" column="access_token"/>
     </resultMap>
 
 
@@ -19,9 +20,9 @@
     <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
         INSERT INTO
         <include refid="TABLE"/>
-        (phone,create_time)
+        (phone,create_time,source,bind_open_id,access_token)
         VALUES
-        (#{entity.phone},#{entity.createTime})
+        (#{entity.phone},#{entity.createTime},#{entity.source},#{entity.bindOpenId},#{entity.accessToken})
     </insert>
 
     <select id="getByPhone" resultMap="DATA">
@@ -43,4 +44,9 @@
         WHERE id=#{keyId}
     </select>
 
+    <update id="updateAccessToken">
+        UPDATE <include refid="TABLE"/>
+        SET access_token=#{accessToken}
+        WHERE id=#{userId}
+    </update>
 </mapper>

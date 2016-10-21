@@ -25,12 +25,30 @@ public interface IUserService {
     User getByPhone(String phone) throws SysException;
 
     /**
+     * 根据open_id查询出用户信息
+     * @param openId
+     * @param sourceType
+     * @return
+     * @throws SysException
+     */
+    User getByOpenId(String openId,int sourceType) throws SysException;
+
+    /**
      * 新建一个用户
      * @param phone
      * @param password
      * @throws SysException
      */
     long createUser(String phone,String password) throws SysException;
+
+    /**
+     * 新建一个用户
+     * @param sourceType
+     * @param openId
+     * @return
+     * @throws SysException
+     */
+    long createUser(int sourceType,String openId,String accessToken) throws SysException;
 
     /**
      * 获取用户密码信息
@@ -47,4 +65,12 @@ public interface IUserService {
      * @throws SysException
      */
     void resetPassword(User user, String password) throws SysException;
+
+    /**
+     * 修改access_token
+     * @param accessToken
+     * @param userId
+     * @throws SysException
+     */
+    void updateAccessToken(String accessToken,long userId) throws SysException;
 }

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SsoServiceImpl extends BaseSerivce implements ISsoService{
-
     private static final long CODE_VALID_INTERVAL=10*60*1000L;//有效期10分钟
 
     @Autowired
@@ -68,11 +67,6 @@ public class SsoServiceImpl extends BaseSerivce implements ISsoService{
     }
 
     @Override
-    public User regUserByAccessToken(int sourceType, String accessToken) throws SysException {
-        return null;
-    }
-
-    @Override
     public void login(String phone, String password, String deviceId) throws SysException {
         //检查密码
         User user=userService.getByPhone(phone);
@@ -119,5 +113,25 @@ public class SsoServiceImpl extends BaseSerivce implements ISsoService{
             throw new SysException("手机号未注册",Constants.ERROR_CODE_USER_NOTEXSIST);
         }
         userService.resetPassword(user,password);
+    }
+
+    @Override
+    public void loginByOther(int sourceType, String accessToken, String openId, String deviceId) throws SysException {
+        //todo 检查第三方access_token是否有效、是否与open_id对应
+        //检查open_id是否存在
+        User user = userService.getByOpenId(openId, sourceType);
+        long userId=0L;
+        if(user==null){
+            //如果第一次登录,产生新账号、绑定OpenId
+            userId=userService.createUser(sourceType,openId,accessToken);
+        }else{
+            userId=user.getId();
+            if(!user.getAccessToken().equals(accessToken)){
+                //修改access_token
+                userService.updateAccessToken(accessToken,userId);
+            }
+        }
+        //登录
+        deviceService.userLogin(deviceId,userId);
     }
 }

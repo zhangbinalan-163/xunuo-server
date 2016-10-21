@@ -18,6 +18,7 @@ public class User {
     private int source;//注册来源 0-手机+验证码  1-微信 2-微博
     private String bindOpenId;//外部系统的openId source为1/2是有效
     private long createTime;
+    private String accessToken;
 
     public long getId() {
         return id;
@@ -57,5 +58,13 @@ public class User {
 
     public void setBindOpenId(String bindOpenId) {
         this.bindOpenId = bindOpenId;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }
