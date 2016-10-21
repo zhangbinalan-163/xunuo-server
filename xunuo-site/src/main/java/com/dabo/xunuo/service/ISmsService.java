@@ -38,4 +38,12 @@ public interface ISmsService {
      * @throws SysException
      */
     void deleteSmsCode(List<Long> codeIdList) throws SysException;
+
+    /**
+     * 获取短信
+     * @param smsType
+     * @param mobile
+     * @throws SysException
+     */
+    SmsCode getSmsCode(int smsType,String mobile) throws SysException;
 }

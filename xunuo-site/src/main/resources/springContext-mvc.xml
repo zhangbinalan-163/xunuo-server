@@ -48,20 +48,20 @@
         </mvc:interceptor>
 
         <!--签名检查过滤器-->
-        <mvc:interceptor>
-            <mvc:mapping path="/**" />
-            <mvc:exclude-mapping path="/admin/**"/>
-            <bean class="com.dabo.xunuo.web.filter.SignVerifyFilter"/>
-        </mvc:interceptor>
+        <!--<mvc:interceptor>-->
+            <!--<mvc:mapping path="/**" />-->
+            <!--<mvc:exclude-mapping path="/admin/**"/>-->
+            <!--<bean class="com.dabo.xunuo.web.filter.SignVerifyFilter"/>-->
+        <!--</mvc:interceptor>-->
 
         <!--权限检查过滤器-->
-        <!--<mvc:interceptor>-->
-            <!--<mvc:mapping path="/user/**" />-->
-            <!--<mvc:mapping path="/note/**"/>-->
-            <!--<mvc:mapping path="/event/**"/>-->
-            <!--<mvc:mapping path="/contact/**"/>-->
-            <!--<bean class="com.dabo.xunuo.web.filter.LoginFilter"/>-->
-        <!--</mvc:interceptor>-->
+        <mvc:interceptor>
+            <mvc:mapping path="/user/**" />
+            <mvc:mapping path="/note/**"/>
+            <mvc:mapping path="/event/**"/>
+            <mvc:mapping path="/contact/**"/>
+            <bean class="com.dabo.xunuo.web.filter.LoginFilter"/>
+        </mvc:interceptor>
 
     </mvc:interceptors>
 

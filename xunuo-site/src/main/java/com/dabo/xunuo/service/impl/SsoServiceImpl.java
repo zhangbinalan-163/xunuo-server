@@ -10,6 +10,8 @@ import com.dabo.xunuo.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 /**
  * Created by zhangbin on 16/8/5.
  */
@@ -33,6 +35,11 @@ public class SsoServiceImpl extends BaseSerivce implements ISsoService{
         if(user!=null){
             throw new SysException("手机号已注册",Constants.ERROR_CODE_MOBILE_EXSIST);
         }
+        //是否有验证码
+        SmsCode oldSms = smsService.getSmsCode(SmsCode.TYPE_REG, mobile);
+        if(oldSms!=null){
+            smsService.deleteSmsCode(Arrays.asList(oldSms.getId()));
+        }
         //生成验证码
         String code= StringUtils.genCode();
         //发送验证码
@@ -52,10 +59,13 @@ public class SsoServiceImpl extends BaseSerivce implements ISsoService{
         if(user==null){
             throw new SysException("手机号未注册",Constants.ERROR_CODE_USER_NOTEXSIST);
         }
-        //TODO 通过缓存控制频率
+        //是否有验证码
+        SmsCode oldSms = smsService.getSmsCode(SmsCode.TYPE_RESET_PASS, mobile);
+        if(oldSms!=null){
+            smsService.deleteSmsCode(Arrays.asList(oldSms.getId()));
+        }
         //生成验证码
         String code= StringUtils.genCode();
-        //TODO 验证码也放到缓存
         //发送验证码
         SmsCode smsCode=new SmsCode();
         smsCode.setCreateTime(System.currentTimeMillis());

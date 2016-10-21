@@ -96,4 +96,11 @@ public class SmsServiceImpl extends BaseSerivce implements ISmsService{
     public void deleteSmsCode(List<Long> codeIdList) throws SysException {
         smsCodeMapper.deleteBatch(codeIdList);
     }
+
+    @Override
+    public SmsCode getSmsCode(int smsType, String mobile) throws SysException {
+        SmsCode smsCode = smsCodeMapper.getByMobile(smsType, mobile);
+        return smsCode;
+    }
+
 }
