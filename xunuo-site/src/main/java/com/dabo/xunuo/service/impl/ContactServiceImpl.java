@@ -7,7 +7,6 @@ import com.dabo.xunuo.dao.ContactTypeMapper;
 import com.dabo.xunuo.entity.ContactFigure;
 import com.dabo.xunuo.entity.ContactFigurePro;
 import com.dabo.xunuo.entity.ContactType;
-import com.dabo.xunuo.entity.UserEventType;
 import com.dabo.xunuo.service.IContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

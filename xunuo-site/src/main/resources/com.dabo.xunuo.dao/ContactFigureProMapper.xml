@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dabo.xunuo.dao.ContactFigureProMapper">
+
+    <sql id="TABLE">t_contact_figure_prop</sql>
+
+    <resultMap id="DATA" type="com.dabo.xunuo.entity.ContactFigurePro">
+        <id property="id" column="id" />
+        <result property="name" column="name"/>
+        <result property="figureId" column="figure_id"/>
+        <result property="propUnit" column="prop_unit"/>
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
+        INSERT INTO
+        <include refid="TABLE"/>
+        (name,figure_id,prop_unit)
+        VALUES
+        (#{entity.name},#{entity.figureId},#{entity.propUnit})
+    </insert>
+
+    <insert id="insertBatch" parameterType="List">
+        INSERT INTO <include refid="TABLE"/>
+        (name,figure_id,prop_unit)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.name},#{item.figureId},#{item.propUnit})
+        </foreach>
+    </insert>
+
+    <select id="getProByFigure" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        WHERE figure_id=#{figureId}
+        ORDER BY id ASC
+    </select>
+
+    <delete id="deleteByFigure">
+        DELETE FROM
+        <include refid="TABLE"/>
+        WHERE figure_id=#{figureId}
+    </delete>
+
+</mapper>
