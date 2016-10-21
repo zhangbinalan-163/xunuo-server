@@ -15,5 +15,13 @@ public interface DeviceInfoMapper extends BaseMapper<Long,DeviceInfo>{
      * @return
      */
     DeviceInfo getByDeviceId(@Param("deviceId") String deviceId);
+
+    /**
+     * 设备关联登录用户
+     * @param deviceId
+     * @param userId
+     * @param loginTime
+     */
+    void bindUser(@Param("deviceId") String deviceId,@Param("userId") long userId,@Param("loginTime") long loginTime);
 }
 

@@ -9,29 +9,45 @@
     <resultMap id="DATA" type="com.dabo.xunuo.entity.ContactType">
         <id property="id" column="id" />
         <result property="name" column="name"/>
-        <result property="source_type" column="source_type"/>
-        <result property="user_id" column="user_id"/>
-        <result property="create_time" column="create_time"/>
-        <result property="update_time" column="update_time"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="userId" column="user_id"/>
+        <result property="sortIndex" column="user_id"/>
+        <result property="createTime" column="sort_index"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
-
 
     <!--新增-->
     <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
         INSERT INTO
         <include refid="TABLE"/>
-        (name,source_type,user_id,create_time,update_time)
+        (name,source_type,user_id,sort_index,create_time,update_time)
         VALUES
-        (#{entity.name},#{entity.source_type},#{entity.user_id},#{entity.create_time},#{entity.update_time})
+        (#{entity.name},#{entity.sourceType},#{entity.userId},#{entity.sortIndex},#{entity.createTime},#{entity.updateTime})
     </insert>
-     <select id="getContactTypeListbyuser" resultMap="DATA">
+
+    <select id="getContactTypeByUser" resultMap="DATA">
         SELECT *
         FROM <include refid="TABLE"/>
-        where (user_id=#{userId} or source_type=0)
-                <if test="orderkey!=null">
-               order by ${orderkey} desc </if>
+        WHERE user_id=#{userId}
+        AND source_type = #{sourceType}
+        ORDER BY ${field} ${direction}
+        <if test="rowBounds!=null">
+            LIMIT #{rowBounds.offSet}, #{rowBounds.limit}
+        </if>
     </select>
 
-   
+    <select id="getMaxSortIndex" resultType="Integer">
+        SELECT max(sort_index)
+        FROM <include refid="TABLE"/>
+        WHERE user_id=#{userId}
+        AND source_type = #{sourceType}
+    </select>
+
+    <select id="countByUser" resultType="Integer">
+        SELECT count(*)
+        FROM <include refid="TABLE"/>
+        WHERE user_id=#{userId}
+        AND source_type = #{sourceType}
+    </select>
 
 </mapper>

@@ -92,4 +92,23 @@ public class NoteController extends BaseController{
 
         return createSuccessResponse(resultObject);
     }
+
+    /**
+     * 删除用户小记
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/delete")
+    @ResponseBody
+    public String deleteNote() throws Exception {
+        //当前登录userId
+        long userId=RequestContext.getUserId();
+        long noteId=RequestUtils.getLong(RequestContext.getNotEmptyParamMap(), "note_id");
+
+        Note note = noteService.getNoteById(noteId);
+        if(note!=null&&note.getUserId()==userId){
+            noteService.deleteNote(noteId);
+        }
+        return createDefaultSuccessResponse();
+    }
 }

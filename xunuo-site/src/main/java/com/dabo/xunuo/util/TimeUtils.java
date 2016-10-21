@@ -58,4 +58,15 @@ public class TimeUtils {
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
         return simpleDateFormat.format(date);
     }
+
+    /**
+     * 获得时间的字符串表示
+     * @param timeStr
+     * @return
+     */
+    public static String getStr(long timeStr){
+        Date date=new Date(timeStr);
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return simpleDateFormat.format(date);
+    }
 }

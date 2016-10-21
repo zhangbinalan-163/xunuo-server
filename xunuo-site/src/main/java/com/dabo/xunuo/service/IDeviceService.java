@@ -12,10 +12,17 @@ public interface IDeviceService {
 
     /**
      * 新建设备信息
-     * @param deviceInfo
      * @throws SysException
      */
-    void createDevice(DeviceInfo deviceInfo) throws SysException;
+    void createDevice(String deviceId) throws SysException;
+
+    /**
+     * 用户在设备上登录
+     * @param deviceId
+     * @param userId
+     * @throws SysException
+     */
+    void userLogin(String deviceId,long userId) throws SysException;
 
     /**
      * 根据设备ID查询设备信息
@@ -24,4 +31,6 @@ public interface IDeviceService {
      * @throws SysException
      */
     DeviceInfo getByDeviceId(String deviceId) throws SysException;
+
+
 }

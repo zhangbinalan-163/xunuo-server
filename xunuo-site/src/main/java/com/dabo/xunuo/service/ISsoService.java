@@ -23,13 +23,14 @@ public interface ISsoService {
     void sendResetCode(String mobile) throws SysException;
 
     /**
-     * 注册用户
-     * @param user
+     * 注册用户并登录
+     * @param phone
      * @param password
      * @param code
+     * @param deviceId
      * @throws SysException
      */
-    void regUser(User user,String password,String code) throws SysException;
+    void regUser(String phone,String password,String code,String deviceId) throws SysException;
 
     /**
      *
@@ -48,5 +49,14 @@ public interface ISsoService {
      * @return
      * @throws SysException
      */
-    String login(String phone,String password,String deviceId) throws SysException;
+    void login(String phone,String password,String deviceId) throws SysException;
+
+    /**
+     * 修改密码
+     * @param phone
+     * @param password
+     * @param code
+     * @throws SysException
+     */
+    void resetPassword(String phone,String password,String code) throws SysException;
 }

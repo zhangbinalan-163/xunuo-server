@@ -27,21 +27,30 @@
     </mvc:annotation-driven>
 
     <mvc:interceptors>
+        <!--跨域过滤器-->
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <bean class="com.dabo.xunuo.web.filter.CorsFilter"/>
+        </mvc:interceptor>
+
         <!--请求统计过滤器-->
         <mvc:interceptor>
             <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/admin/**"/>
             <bean class="com.dabo.xunuo.web.filter.RequestStatisFilter"/>
         </mvc:interceptor>
 
         <!--解析过滤器-->
         <mvc:interceptor>
             <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/admin/**"/>
             <bean class="com.dabo.xunuo.web.filter.RequestParseFilter"/>
         </mvc:interceptor>
 
         <!--签名检查过滤器-->
         <mvc:interceptor>
             <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/admin/**"/>
             <bean class="com.dabo.xunuo.web.filter.SignVerifyFilter"/>
         </mvc:interceptor>
 
@@ -50,6 +59,7 @@
             <mvc:mapping path="/user/**" />
             <mvc:mapping path="/note/**"/>
             <mvc:mapping path="/event/**"/>
+            <mvc:mapping path="/contact/**"/>
             <mvc:mapping path="/common/img/upload"/>
             <bean class="com.dabo.xunuo.web.filter.LoginFilter"/>
         </mvc:interceptor>

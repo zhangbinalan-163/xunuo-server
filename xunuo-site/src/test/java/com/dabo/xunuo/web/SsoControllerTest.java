@@ -61,13 +61,14 @@ public class SsoControllerTest {
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("phone", phone);
         paramMap.put("nonce", nonce);
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
         paramMap.put("timestamp", String.valueOf(timestamp));
 
         MockHttpServletRequestBuilder request =
                 MockMvcRequestBuilders.get("/sso/reg/code")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID",deviceId)
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("phone", phone)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
@@ -82,31 +83,29 @@ public class SsoControllerTest {
     }
 
     @Test
-    public void regNormalTest() throws Exception {
+    public void regByPhoneTest() throws Exception {
         long timestamp=System.currentTimeMillis();
         String nonce="123456";
         String phone="18069812065";
-        int source=0;
-        String code="302673";
+        String code="947883";
         String password= StringUtils.md5("123456");
 
         Map<String, String> paramMap = new HashMap<>();
-        paramMap.put("phone", phone);
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
-        paramMap.put("source_type", String.valueOf(source));
         paramMap.put("code", code);
         paramMap.put("password", password);
+        paramMap.put("phone", phone);
 
         MockHttpServletRequestBuilder request =
                 MockMvcRequestBuilders.get("/sso/reg")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID", deviceId)
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("phone", phone)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
-                        .param("source_type",  String.valueOf(source))
                         .param("code", code)
                         .param("password", password)
                         .param("app_key", Constants.APP_KEY)
@@ -131,12 +130,13 @@ public class SsoControllerTest {
         paramMap.put("password", password);
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
 
         MockHttpServletRequestBuilder request =
                 MockMvcRequestBuilders.get("/sso/login")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V", version)
-                        .header("X-XN-DEVICEID", deviceId)
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("phone", phone)
                         .param("nonce", nonce)
                         .param("timestamp",  String.valueOf(timestamp))

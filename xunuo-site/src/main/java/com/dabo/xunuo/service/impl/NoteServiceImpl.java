@@ -34,4 +34,14 @@ public class NoteServiceImpl implements INoteService{
     public int countUserNote(long userId) throws SysException {
         return noteMapper.countByUser(userId);
     }
+
+    @Override
+    public void deleteNote(long noteId) throws SysException {
+        noteMapper.delete(noteId);
+    }
+
+    @Override
+    public Note getNoteById(long noteId) throws SysException {
+        return noteMapper.getById(noteId);
+    }
 }

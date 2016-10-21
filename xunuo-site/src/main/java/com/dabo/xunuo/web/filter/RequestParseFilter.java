@@ -1,9 +1,8 @@
 package com.dabo.xunuo.web.filter;
 
-import com.dabo.xunuo.entity.SidInfo;
+import com.dabo.xunuo.common.Constants;
+import com.dabo.xunuo.common.exception.SysException;
 import com.dabo.xunuo.util.RequestUtils;
-import com.dabo.xunuo.util.SidUtils;
-import com.dabo.xunuo.util.StringUtils;
 import com.dabo.xunuo.web.vo.ClientType;
 import com.dabo.xunuo.web.vo.RequestContext;
 import com.dabo.xunuo.web.vo.Version;
@@ -19,33 +18,30 @@ import java.util.Map;
  */
 public class RequestParseFilter extends BaseFilter {
 
-    private static final String HEADER_NAME_CLIENT="X-XN-CLIENT";
+    private static final String PARAM_NAME_CLIENT="client_type";
 
-    private static final String HEADER_NAME_CLIENT_V="X-XN-CLIENT-V";
-
-    private static final String HEADER_NAME_DEVICEID="X-XN-DEVICEID";
-
-    private static final String HEADER_NAME_SID="X-XN-SID";
+    private static final String PARAM_NAME_DEVICEID="device_id";
 
     @Override
     protected boolean beforeExecute(HttpServletRequest request,HttpServletResponse response) throws Exception{
-        //解析出header
-        String client=RequestUtils.getHeader(request, HEADER_NAME_CLIENT);
-        ClientType clientType = ClientType.getInstance(client);
-        RequestContext.setClientType(clientType);
-
-        String clientVersion=RequestUtils.getHeader(request, HEADER_NAME_CLIENT_V);
-        RequestContext.setVersion(Version.getInstance(clientVersion));
-
-        String deviceId=RequestUtils.getHeader(request,HEADER_NAME_DEVICEID,null);
-        RequestContext.setDeviceId(deviceId);
-
-        String sid=RequestUtils.getHeader(request,HEADER_NAME_SID,null);
-        RequestContext.setSid(sid);
-
         //解析出全部参数,设置到请求上下文
         Map<String, String> notEmptyParamMap = RequestUtils.getNotEmptyParam(request);
         RequestContext.webParamThreadLocal(notEmptyParamMap);
+
+        //client_type
+        String client=RequestUtils.getString(notEmptyParamMap, PARAM_NAME_CLIENT);
+        int index=client.indexOf("_");
+        if(index==-1){
+            throw new SysException("参数空或格式错误:"+PARAM_NAME_CLIENT, Constants.ERROR_CODE_INVALID_PARAM);
+        }
+        String clientVersion=client.substring(index+1);
+        String clientTypeStr=client.substring(0,index);
+        ClientType clientType = ClientType.getInstance(clientTypeStr);
+        RequestContext.setClientType(clientType);
+        RequestContext.setVersion(Version.getInstance(clientVersion));
+        //device_id
+        String deviceId=RequestUtils.getString(notEmptyParamMap, PARAM_NAME_DEVICEID);
+        RequestContext.setDeviceId(deviceId);
 
         return true;
     }

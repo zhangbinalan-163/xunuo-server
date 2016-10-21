@@ -32,7 +32,7 @@ public interface BaseMapper<K,T> {
      * 删除实体数据,根据ID
      * @param keyId
      */
-    void delete(K keyId);
+    void delete(@Param("keyId") K keyId);
 
     /**
      * 删除实体数据,根据ID
@@ -45,7 +45,7 @@ public interface BaseMapper<K,T> {
      * @param keyId
      * @return
      */
-    T getById(K keyId);
+    T getById(@Param("keyId") K keyId);
 
     /**
      * 批量获取数据

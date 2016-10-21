@@ -82,4 +82,35 @@ public class CommonControllerTest {
         System.out.println(JsonUtils.fromObject(dataResponse));
         Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
     }
+
+
+    @Test
+    public void publishSuggestTest() throws Exception {
+        long timestamp=System.currentTimeMillis();
+        String nonce="123456";
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("nonce", nonce);
+        paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("suggest", "建议");
+
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.get("/common/app/suggest")
+                        .header("X-XN-CLIENT", clientType)
+                        .header("X-XN-CLIENT-V",version)
+                        .header("X-XN-DEVICEID",deviceId)
+                        .header("X-XN-SID",sid)
+                        .param("nonce", nonce)
+                        .param("timestamp", String.valueOf(timestamp))
+                        .param("suggest", "建议")
+                        .param("app_key", Constants.APP_KEY)
+                        .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
+
+        MvcResult result = mockMvc.perform(request)
+                .andReturn();
+        String resultContent=result.getResponse().getContentAsString();
+        DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
+        System.out.println(JsonUtils.fromObject(dataResponse));
+        Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
+    }
 }

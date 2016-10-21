@@ -8,6 +8,7 @@ import com.dabo.xunuo.entity.Contact;
 import com.dabo.xunuo.entity.RowBounds;
 
 public interface ContactMapper extends BaseMapper<Long,Contact>{
+
 	List<Contact>  getContactList(@Param("userId")long userId,@Param("contacttypeid")int contacttypeid,@Param("orderkey")String orderkey,@Param("rowBounds")RowBounds rowBounds);
 
 }

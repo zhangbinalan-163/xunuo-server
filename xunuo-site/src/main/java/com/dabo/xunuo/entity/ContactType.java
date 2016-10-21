@@ -1,57 +1,72 @@
 package com.dabo.xunuo.entity;
-
-import java.util.List;
-
+/**
+ * 联系人实体
+ */
 public class ContactType {
-	private int id;
+	public static final int SOURCE_SYSTEM=0;
+	public static final int SOURCE_USER=1;
+
+	private long id;
 	private String name;
-	private String source_type;
-	private String user_id;
-	private Long create_time;
-	private Long update_time;
-	private List<Contact>ContactList;
-	public int getId() {
+	private int sourceType;
+	private long userId;
+	private long createTime;
+	private long updateTime;
+	private int sortIndex;
+
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+
+	public void setId(long id) {
 		this.id = id;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getSource_type() {
-		return source_type;
-	}
-	public void setSource_type(String source_type) {
-		this.source_type = source_type;
-	}
-	public String getUser_id() {
-		return user_id;
-	}
-	public void setUser_id(String user_id) {
-		this.user_id = user_id;
-	}
-	public Long getCreate_time() {
-		return create_time;
-	}
-	public void setCreate_time(Long create_time) {
-		this.create_time = create_time;
-	}
-	public Long getUpdate_time() {
-		return update_time;
-	}
-	public void setUpdate_time(Long update_time) {
-		this.update_time = update_time;
-	}
-	public List<Contact> getContactList() {
-		return ContactList;
-	}
-	public void setContactList(List<Contact> contactList) {
-		ContactList = contactList;
+
+	public int getSourceType() {
+		return sourceType;
 	}
 
-   
+	public void setSourceType(int sourceType) {
+		this.sourceType = sourceType;
+	}
+
+	public long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+
+	public long getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(long createTime) {
+		this.createTime = createTime;
+	}
+
+	public long getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(long updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public int getSortIndex() {
+		return sortIndex;
+	}
+
+	public void setSortIndex(int sortIndex) {
+		this.sortIndex = sortIndex;
+	}
 }

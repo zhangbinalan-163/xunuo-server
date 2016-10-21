@@ -5,10 +5,11 @@ package com.dabo.xunuo.entity;
  * Created by zhangbin on 16/8/5.
  */
 public class DeviceInfo {
-    //其他字段均可扩展
     private long id;
     private String deviceId;
     private long createTime;
+    private long loginUserId;//当前登录的用户
+    private long loginTime;//用户最近登录时间
 
     public long getId() {
         return id;
@@ -32,5 +33,21 @@ public class DeviceInfo {
 
     public void setCreateTime(long createTime) {
         this.createTime = createTime;
+    }
+
+    public long getLoginUserId() {
+        return loginUserId;
+    }
+
+    public void setLoginUserId(long loginUserId) {
+        this.loginUserId = loginUserId;
+    }
+
+    public long getLoginTime() {
+        return loginTime;
+    }
+
+    public void setLoginTime(long loginTime) {
+        this.loginTime = loginTime;
     }
 }

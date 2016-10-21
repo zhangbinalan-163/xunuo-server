@@ -27,6 +27,12 @@ public class Constants {
     public static final int ERROR_CODE_PASS_ERROR=40009;
     //错误码,未登录
     public static final int ERROR_CODE_NOT_LOGIN=40010;
+    //错误码,手机号已注册
+    public static final int ERROR_CODE_MOBILE_EXSIST=40011;
+    //错误码,第三方凭证异常
+    public static final int ERROR_CODE_REG_OPENID_FAIL=40012;
+    //错误码,数据已存在
+    public static final int ERROR_CODE_DATA_EXSIST=40013;
 
     //APP的KEY,签名会用
     public static final String APP_KEY="dabo_app_xunuo";

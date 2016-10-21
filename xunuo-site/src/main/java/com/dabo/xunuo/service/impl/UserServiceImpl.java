@@ -34,18 +34,52 @@ public class UserServiceImpl extends BaseSerivce implements IUserService {
     }
 
     @Override
-    public void createUser(User user, UserCertificate userCertificate) throws SysException {
+    public long createUser(String phone,String password) throws SysException {
         //新建用户
+        User user=new User();
+        user.setPhone(phone);
+        user.setCreateTime(System.currentTimeMillis());
+        user.setSource(User.SOURCE_OUR);
+        user.setBindOpenId("");
+        user.setPhone(phone);
         userMapper.insert(user);
         //保存用户密码
+        String salt=StringUtils.genCode();
+        UserCertificate userCertificate=new UserCertificate();
+        userCertificate.setPassword(StringUtils.md5(password+"#"+salt));
+        userCertificate.setSalt(salt);
+        userCertificate.setUserId(user.getId());
+        userCertificate.setUpdateTime(System.currentTimeMillis());
         userCertificateMapper.insert(userCertificate);
         //发布用户注册事件
         UserRegEvent userRegEvent=new UserRegEvent(user);
         eventBus.post(userRegEvent);
+
+        return user.getId();
     }
 
     @Override
     public UserCertificate getUserCertificate(User user) throws SysException {
         return userCertificateMapper.getByUserId(user.getId());
+    }
+
+    @Override
+    public void resetPassword(User user, String password) throws SysException {
+        UserCertificate certificate = getUserCertificate(user);
+        if(certificate!=null){
+            String salt=StringUtils.genCode();
+            certificate.setPassword(StringUtils.md5(password+"#"+salt));
+            certificate.setSalt(salt);
+            certificate.setUpdateTime(System.currentTimeMillis());
+            userCertificateMapper.update(certificate);
+        }else{
+            String salt=StringUtils.genCode();
+            UserCertificate userCertificate=new UserCertificate();
+            userCertificate.setPassword(StringUtils.md5(password+"#"+salt));
+            userCertificate.setSalt(salt);
+            userCertificate.setUserId(user.getId());
+            userCertificate.setUpdateTime(System.currentTimeMillis());
+            userCertificateMapper.insert(userCertificate);
+        }
     }
 }

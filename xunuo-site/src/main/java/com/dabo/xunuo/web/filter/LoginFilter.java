@@ -2,10 +2,11 @@ package com.dabo.xunuo.web.filter;
 
 import com.dabo.xunuo.common.Constants;
 import com.dabo.xunuo.common.exception.SysException;
-import com.dabo.xunuo.entity.SidInfo;
-import com.dabo.xunuo.util.SidUtils;
-import com.dabo.xunuo.util.StringUtils;
+import com.dabo.xunuo.entity.DeviceInfo;
+import com.dabo.xunuo.service.IDeviceService;
 import com.dabo.xunuo.web.vo.RequestContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,21 +14,29 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 对是否登录等进行检查
  */
+@Component
 public class LoginFilter extends BaseFilter {
+
+    @Autowired
+    private IDeviceService deviceService;
 
     @Override
     protected boolean beforeExecute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //是否登录
-        String sid=RequestContext.getSid();
-        if(!StringUtils.isEmpty(sid)){
-            SidInfo sidInfo= SidUtils.parseSid(sid);
-            if(sidInfo!=null){
-                //检查登录有效时间,目前暂时固定为一直有效
-                //当前登录的UserId
-                RequestContext.setUserId(sidInfo.getUserId());
-                return true;
-            }
+        String deviceId=RequestContext.getDeviceId();
+        DeviceInfo deviceInfo = deviceService.getByDeviceId(deviceId);
+        if(deviceInfo!=null&&deviceInfo.getLoginUserId()!=0&&inTimeValid(deviceInfo.getLoginTime())){
+            return true;
         }
+        //是否登录
         throw new SysException("未登录", Constants.ERROR_CODE_NOT_LOGIN);
+    }
+
+    /**
+     * 登录是否过期
+     * @param loginTime
+     * @return
+     */
+    private boolean inTimeValid(long loginTime) {
+        return true;
     }
 }

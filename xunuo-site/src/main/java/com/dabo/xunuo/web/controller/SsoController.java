@@ -1,8 +1,5 @@
 package com.dabo.xunuo.web.controller;
 
-
-import com.alibaba.fastjson.JSONObject;
-import com.dabo.xunuo.entity.User;
 import com.dabo.xunuo.service.ISsoService;
 import com.dabo.xunuo.util.RequestUtils;
 import com.dabo.xunuo.web.vo.RequestContext;
@@ -45,27 +42,13 @@ public class SsoController extends BaseController{
     @RequestMapping(value = "/reg")
     @ResponseBody
     public String regUser() throws Exception {
-        //参数的解析与校验
-        int sourceType=RequestUtils.getInt(RequestContext.getNotEmptyParamMap(), "source_type");
-        if(sourceType== User.SOURCE_OUR){
-            String phone=RequestUtils.getMobileString(RequestContext.getNotEmptyParamMap(), "phone");
-            String password=RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "password").toUpperCase();
-            String code=RequestUtils.getString(RequestContext.getNotEmptyParamMap(),"code");
+        String phone=RequestUtils.getMobileString(RequestContext.getNotEmptyParamMap(), "phone");
+        String password=RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "password").toUpperCase();
+        String code=RequestUtils.getString(RequestContext.getNotEmptyParamMap(),"code");
+        String deviceId=RequestContext.getDeviceId();
 
-            User user=new User();
-            user.setPhone(phone);
-            user.setCreateTime(System.currentTimeMillis());
-            user.setSource(sourceType);
-            user.setBindOpenId("");
-            user.setPhone(phone);
+        ssoService.regUser(phone,password,code,deviceId);
 
-            ssoService.regUser(user,password,code);
-
-        }else if(sourceType == User.SOURCE_WECHAT||sourceType == User.SOURCE_WEIBO){
-            String accessToken=RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "access_token");
-            //TODO 根据token去获取用户的openid
-        }
-        //
         return createDefaultSuccessResponse();
     }
 
@@ -86,6 +69,24 @@ public class SsoController extends BaseController{
     }
 
     /**
+     * 修改密码
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/reset")
+    @ResponseBody
+    public String resetPassword() throws Exception {
+        //参数的解析与校验
+        String phone=RequestUtils.getMobileString(RequestContext.getNotEmptyParamMap(), "phone");
+        String password=RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "password").toUpperCase();
+        String code=RequestUtils.getString(RequestContext.getNotEmptyParamMap(),"code");
+
+        ssoService.resetPassword(phone,password,code);
+
+        return createDefaultSuccessResponse();
+    }
+
+    /**
      * 修改密码发手机验证码
      * @return
      * @throws Exception
@@ -97,12 +98,8 @@ public class SsoController extends BaseController{
         String phone=RequestUtils.getMobileString(RequestContext.getNotEmptyParamMap(), "phone");
         String password=RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "password").toUpperCase();
         //登录
-        String sid=ssoService.login(phone, password, RequestContext.getDeviceId());
+        ssoService.login(phone, password, RequestContext.getDeviceId());
 
-        JSONObject jsonObject=new JSONObject();
-        jsonObject.put("sid",sid);
-        jsonObject.put("new_user",false);
-
-        return createSuccessResponse(jsonObject);
+        return createDefaultSuccessResponse();
     }
 }

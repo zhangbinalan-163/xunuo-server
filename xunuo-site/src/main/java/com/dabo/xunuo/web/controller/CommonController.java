@@ -2,6 +2,8 @@ package com.dabo.xunuo.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dabo.xunuo.service.IImageService;
+import com.dabo.xunuo.util.RequestUtils;
+import com.dabo.xunuo.web.vo.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,5 +38,18 @@ public class CommonController extends BaseController{
         JSONObject jsonObject=new JSONObject();
         jsonObject.put("url",url);
         return createSuccessResponse(jsonObject);
+    }
+
+    /**
+     * 图片上传
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/app/suggest")
+    @ResponseBody
+    public String appSuggest() throws Exception {
+        String suggest= RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "suggest");
+        //TODO 暂时不处理
+        return createDefaultSuccessResponse();
     }
 }

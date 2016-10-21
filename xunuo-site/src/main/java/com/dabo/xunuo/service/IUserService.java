@@ -26,11 +26,11 @@ public interface IUserService {
 
     /**
      * 新建一个用户
-     * @param user
-     * @param userCertificate
+     * @param phone
+     * @param password
      * @throws SysException
      */
-    void createUser(User user,UserCertificate userCertificate) throws SysException;
+    long createUser(String phone,String password) throws SysException;
 
     /**
      * 获取用户密码信息
@@ -39,4 +39,12 @@ public interface IUserService {
      * @throws SysException
      */
     UserCertificate getUserCertificate(User user) throws SysException;
+
+    /**
+     * 修改密码
+     * @param user
+     * @param password
+     * @throws SysException
+     */
+    void resetPassword(User user, String password) throws SysException;
 }

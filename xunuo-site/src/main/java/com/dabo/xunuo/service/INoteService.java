@@ -34,4 +34,19 @@ public interface INoteService {
      * @throws SysException
      */
     int countUserNote(long userId) throws SysException;
+
+    /**
+     * 删除用户小计
+     * @param noteId
+     * @throws SysException
+     */
+    void deleteNote(long noteId) throws SysException;
+
+    /**
+     * 获取用户小计
+     * @param noteId
+     * @return
+     * @throws SysException
+     */
+    Note getNoteById(long noteId) throws SysException;
 }

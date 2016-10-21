@@ -10,14 +10,16 @@
         <id property="id" column="id" />
         <result property="deviceId" column="device_id"/>
         <result property="createTime" column="create_time"/>
+        <result property="loginTime" column="login_time"/>
+        <result property="loginUserId" column="login_user_id"/>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
         INSERT INTO
         <include refid="TABLE"/>
-        (device_id,create_time)
+        (device_id,create_time,login_time,login_user_id)
         VALUES
-        (#{entity.deviceId},#{entity.createTime})
+        (#{entity.deviceId},#{entity.createTime},#{entity.loginTime},#{entity.loginUserId})
     </insert>
 
     <select id="getByDeviceId" resultMap="DATA">
@@ -26,4 +28,10 @@
         WHERE device_id=#{deviceId}
     </select>
 
+    <update id="bindUser">
+        UPDATE
+        <include refid="TABLE"/>
+        SET login_user_id=#{userId},login_time=#{loginTime}
+        WHERE device_id=#{deviceId}
+    </update>
 </mapper>

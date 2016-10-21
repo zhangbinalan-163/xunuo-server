@@ -5,7 +5,6 @@ import com.dabo.xunuo.common.Constants;
 import com.dabo.xunuo.common.exception.SysException;
 import com.dabo.xunuo.entity.DeviceInfo;
 import com.dabo.xunuo.service.IDeviceService;
-import com.dabo.xunuo.util.RequestUtils;
 import com.dabo.xunuo.web.vo.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,18 +31,15 @@ public class DeviceController extends BaseController{
     @ResponseBody
     public String regDeviceId() throws Exception {
         //参数的解析与校验
-        String deviceId=RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "deviceId");
+        String deviceId=RequestContext.getDeviceId();
         //检查是否已经注册
         DeviceInfo deviceInfo = deviceService.getByDeviceId(deviceId);
         if(deviceInfo!=null){
             throw new SysException("该设备号已经存在", Constants.ERROR_CODE_DEVICE_EXSIST);
         }
         //如果不存在,注册一下
-        deviceInfo=new DeviceInfo();
-        deviceInfo.setDeviceId(deviceId);
-        deviceInfo.setCreateTime(System.currentTimeMillis());
-        deviceService.createDevice(deviceInfo);
-
+        deviceService.createDevice(deviceId);
+        //
         return createDefaultSuccessResponse();
     }
 }

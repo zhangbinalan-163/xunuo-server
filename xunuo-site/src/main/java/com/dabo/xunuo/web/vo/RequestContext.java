@@ -21,8 +21,6 @@ public class RequestContext {
     private static ThreadLocal<ClientType> clientTypeThreadLocal=new ThreadLocal<>();
     //当前请求的APP版本号
     private static ThreadLocal<Version> versionThreadLocal=new ThreadLocal<>();
-    //当前请求SID
-    private static ThreadLocal<String> sidThreadLocal=new ThreadLocal<>();
     //当前请求的设备ID
     private static ThreadLocal<String> deviceIdThreadLocal=new ThreadLocal<>();
     /**
@@ -94,14 +92,6 @@ public class RequestContext {
 
     public static void setDeviceId(String deviceId) {
         deviceIdThreadLocal.set(deviceId);
-    }
-
-    public static String getSid() {
-        return sidThreadLocal.get();
-    }
-
-    public static void setSid(String sid) {
-        sidThreadLocal.set(sid);
     }
 
     public static Version getVersion() {

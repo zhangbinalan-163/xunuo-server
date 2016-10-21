@@ -19,12 +19,20 @@ public class DeviceServiceImpl extends BaseSerivce implements IDeviceService {
     private DeviceInfoMapper deviceInfoMapper;
 
     @Override
-    public void createDevice(DeviceInfo deviceInfo) throws SysException {
+    public void createDevice(String deviceId) throws SysException {
+        DeviceInfo deviceInfo=new DeviceInfo();
+        deviceInfo.setDeviceId(deviceId);
+        deviceInfo.setCreateTime(System.currentTimeMillis());
         deviceInfoMapper.insert(deviceInfo);
     }
 
     @Override
     public DeviceInfo getByDeviceId(String deviceId) throws SysException {
         return deviceInfoMapper.getByDeviceId(deviceId);
+    }
+
+    @Override
+    public void userLogin(String deviceId, long userId) throws SysException {
+        deviceInfoMapper.bindUser(deviceId,userId,System.currentTimeMillis());
     }
 }

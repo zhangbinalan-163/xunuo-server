@@ -2,15 +2,10 @@ package com.dabo.xunuo.service.impl;
 
 import com.dabo.xunuo.common.Constants;
 import com.dabo.xunuo.common.exception.SysException;
-import com.dabo.xunuo.entity.SidInfo;
 import com.dabo.xunuo.entity.SmsCode;
 import com.dabo.xunuo.entity.User;
 import com.dabo.xunuo.entity.UserCertificate;
-import com.dabo.xunuo.service.BaseSerivce;
-import com.dabo.xunuo.service.ISmsService;
-import com.dabo.xunuo.service.ISsoService;
-import com.dabo.xunuo.service.IUserService;
-import com.dabo.xunuo.util.SidUtils;
+import com.dabo.xunuo.service.*;
 import com.dabo.xunuo.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +15,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SsoServiceImpl extends BaseSerivce implements ISsoService{
+
     private static final long CODE_VALID_INTERVAL=10*60*1000L;//有效期10分钟
 
     @Autowired
@@ -28,8 +24,16 @@ public class SsoServiceImpl extends BaseSerivce implements ISsoService{
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private IDeviceService deviceService;
+
     @Override
     public void sendRegCode(String mobile) throws SysException {
+        //检查是否已经注册
+        User user=userService.getByPhone(mobile);
+        if(user!=null){
+            throw new SysException("手机号已注册",Constants.ERROR_CODE_MOBILE_EXSIST);
+        }
         //生成验证码
         String code= StringUtils.genCode();
         //发送验证码
@@ -69,23 +73,7 @@ public class SsoServiceImpl extends BaseSerivce implements ISsoService{
     }
 
     @Override
-    public void regUser(User user, String password,String code) throws SysException {
-        //校验验证码
-        smsService.validSmsCode(SmsCode.TYPE_REG, user.getPhone(), code);
-
-        //保存用户信息
-        String salt=StringUtils.genCode();
-        UserCertificate userCertificate=new UserCertificate();
-        userCertificate.setPassword(StringUtils.md5(password+"#"+salt));
-        userCertificate.setSalt(salt);
-        userCertificate.setUserId(user.getId());
-        userCertificate.setUpdateTime(System.currentTimeMillis());
-
-        userService.createUser(user,userCertificate);
-    }
-
-    @Override
-    public String login(String phone, String password, String deviceId) throws SysException {
+    public void login(String phone, String password, String deviceId) throws SysException {
         //检查密码
         User user=userService.getByPhone(phone);
         if(user==null){
@@ -98,20 +86,38 @@ public class SsoServiceImpl extends BaseSerivce implements ISsoService{
         String passWithSalt=StringUtils.md5(password+"#"+userCertificate.getSalt());
         String rightPass=userCertificate.getPassword();
         if(rightPass.equals(passWithSalt)){
-            //登录成功,生成SID
-            return generateSid(user.getId(), deviceId);
+            //设备与账号绑定
+            deviceService.userLogin(deviceId,user.getId());
         }else{
-            //登录错误次数控制
+            //todo 登录错误次数控制
             throw new SysException("密码错误",Constants.ERROR_CODE_PASS_ERROR);
         }
     }
 
-    private String generateSid(long id, String deviceId) throws SysException {
-        SidInfo sidInfo=new SidInfo();
-        sidInfo.setLoginTime(System.currentTimeMillis());
-        sidInfo.setDeviceId(deviceId);
-        sidInfo.setUserId(id);
+    @Override
+    public void regUser(String phone, String password, String code, String deviceId) throws SysException {
+        //校验验证码
+        smsService.validSmsCode(SmsCode.TYPE_REG, phone, code);
+        //检查用户是否存在
+        User userInfo = userService.getByPhone(phone);
+        if(userInfo!=null){
+            throw new SysException("手机号已注册",Constants.ERROR_CODE_MOBILE_EXSIST);
+        }
+        //保存用户信息
+        long userId = userService.createUser(phone, password);
+        //保存登录信息
+        deviceService.userLogin(deviceId,userId);
+    }
 
-        return SidUtils.generateSid(sidInfo);
+    @Override
+    public void resetPassword(String phone, String password, String code) throws SysException {
+        //校验验证码
+        smsService.validSmsCode(SmsCode.TYPE_RESET_PASS, phone, code);
+        //检查用户是否存在
+        User user=userService.getByPhone(phone);
+        if(user==null){
+            throw new SysException("手机号未注册",Constants.ERROR_CODE_USER_NOTEXSIST);
+        }
+        userService.resetPassword(user,password);
     }
 }

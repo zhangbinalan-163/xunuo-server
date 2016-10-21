@@ -1,12 +1,17 @@
 package com.dabo.xunuo.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 /**
  * 接口响应实体
  */
 public class DataResponse {
+    @JSONField(name = "err_msg")
     private String errMsg; // 消息
+    @JSONField(name = "err_code")
     private int errorCode; // 错误码
     private Object data; // 返回对象
+    @JSONField(name = "trace_id")
     private String traceId;//错误跟踪码
 
     public String getErrMsg() {

@@ -43,6 +43,10 @@ public class DeviceControllerTest {
 
     private MockMvc mockMvc;
 
+    private String clientType="IOS";
+
+    private String version="1.1.1";
+
     @Before
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -55,13 +59,15 @@ public class DeviceControllerTest {
         String deviceId="my_device_id";
 
         Map<String, String> paramMap = new HashMap<>();
-        paramMap.put("deviceId", deviceId);
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
 
         MockHttpServletRequestBuilder request =
                 MockMvcRequestBuilders.get("/device/reg")
-                        .param("deviceId", deviceId)
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
                         .param("app_key", Constants.APP_KEY)
