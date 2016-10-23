@@ -54,6 +54,9 @@ public class TimeUtils {
      * @return
      */
     public static String getDateStrWithoutTime(long timeStr){
+        if(timeStr==0){
+            return "";
+        }
         Date date=new Date(timeStr);
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
         return simpleDateFormat.format(date);

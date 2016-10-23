@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dabo.xunuo.dao.ContactProMapper">
+
+    <sql id="TABLE">t_contact_pro</sql>
+
+    <resultMap id="DATA" type="com.dabo.xunuo.entity.ContactPro">
+        <id property="id" column="id" />
+        <result property="name" column="name"/>
+        <result property="contactId" column="contact_id"/>
+        <result property="value" column="value"/>
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
+        INSERT INTO
+        <include refid="TABLE"/>
+        (name,contact_id,value)
+        VALUES
+        (#{entity.name},#{entity.contactId},#{entity.value})
+    </insert>
+
+    <insert id="insertBatch" parameterType="List">
+        INSERT INTO <include refid="TABLE"/>
+        (name,contact_id,value)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.name},#{item.contactId},#{item.value})
+        </foreach>
+    </insert>
+
+    <select id="getProByContact" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        WHERE contact_id=#{contactId}
+        ORDER BY id ASC
+    </select>
+
+    <delete id="deleteProByContact">
+        DELETE FROM
+        <include refid="TABLE"/>
+        WHERE contact_id=#{contactId}
+    </delete>
+
+</mapper>

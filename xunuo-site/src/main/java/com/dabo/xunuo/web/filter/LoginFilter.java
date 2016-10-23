@@ -25,6 +25,7 @@ public class LoginFilter extends BaseFilter {
         String deviceId=RequestContext.getDeviceId();
         DeviceInfo deviceInfo = deviceService.getByDeviceId(deviceId);
         if(deviceInfo!=null&&deviceInfo.getLoginUserId()!=0&&inTimeValid(deviceInfo.getLoginTime())){
+            RequestContext.setUserId(deviceInfo.getLoginUserId());
             return true;
         }
         //是否登录

@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dabo.xunuo.dao.SmsCodeMapper;
 import com.dabo.xunuo.entity.SmsCode;
+import com.dabo.xunuo.entity.UserEventType;
+import com.dabo.xunuo.service.IUserEventService;
 import com.dabo.xunuo.util.StringUtils;
 import com.dabo.xunuo.util.TimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,13 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RequestMapping("/admin")
 @Controller
-public class AdminController extends BaseController{
+public class  AdminController extends BaseController{
 
     @Autowired
     private SmsCodeMapper smsCodeMapper;
+
+    @Autowired
+    private IUserEventService userEventService;
 
     /**
      * 查询手机验证码
@@ -49,4 +54,24 @@ public class AdminController extends BaseController{
         }
         return createDefaultSuccessResponse();
     }
+
+    /**
+     * 创建系统自定义事件类型
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/event/type/create")
+    @ResponseBody
+    public String createEventType(HttpServletRequest httpServletRequest) throws Exception {
+        String name=httpServletRequest.getParameter("name");
+
+        UserEventType userEventType=new UserEventType();
+        userEventType.setName(name);
+        userEventType.setSourceType(UserEventType.SOURCE_SYSTEM);
+
+        userEventService.createUserEventType(userEventType);
+
+        return createDefaultSuccessResponse();
+    }
+
 }

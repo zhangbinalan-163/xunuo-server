@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dabo.xunuo.dao.ContactFigureProValueMapper">
+
+    <sql id="TABLE">t_contact_figure_value</sql>
+
+    <resultMap id="DATA" type="com.dabo.xunuo.entity.ContactFigureProValue">
+        <id property="id" column="id" />
+        <result property="contactId" column="contact_id"/>
+        <result property="figurePropId" column="figure_prop_id"/>
+        <result property="value" column="prop_value"/>
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
+        INSERT INTO
+        <include refid="TABLE"/>
+        (contact_id,figure_prop_id,prop_value)
+        VALUES
+        (#{entity.contactId},#{entity.figurePropId},#{entity.value})
+    </insert>
+
+    <insert id="insertBatch" parameterType="List">
+        INSERT INTO <include refid="TABLE"/>
+        (contact_id,figure_prop_id,prop_value)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.contactId},#{item.figurePropId},#{item.value})
+        </foreach>
+    </insert>
+
+    <select id="getProValueByContact" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        WHERE contact_id=#{contactId}
+        AND figure_prop_id IN
+        <foreach item="item" index="index" collection="proIdList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="deleteByFigure">
+        DELETE FROM
+        <include refid="TABLE"/>
+        WHERE figure_id=#{figureId}
+    </delete>
+
+    <update id="deleteProValueByContact">
+        DELETE FROM <include refid="TABLE"/>
+        WHERE contact_id=#{contactId}
+        AND figure_prop_id IN
+        <foreach item="item" index="index" collection="proIdList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>

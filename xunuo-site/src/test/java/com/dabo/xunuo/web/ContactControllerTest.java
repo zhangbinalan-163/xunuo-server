@@ -1,9 +1,12 @@
 package com.dabo.xunuo.web;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.dabo.xunuo.common.Constants;
 import com.dabo.xunuo.entity.DataResponse;
 import com.dabo.xunuo.util.JsonUtils;
 import com.dabo.xunuo.util.SignUtils;
+import com.google.gson.annotations.JsonAdapter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,13 +63,13 @@ public class ContactControllerTest {
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
 
         MockHttpServletRequestBuilder request =
                 MockMvcRequestBuilders.get("/contact/figure/list")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID",deviceId)
-                        .header("X-XN-SID",sid)
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
                         .param("app_key", Constants.APP_KEY)
@@ -89,17 +92,95 @@ public class ContactControllerTest {
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
-        paramMap.put("figureId", "1");
+        paramMap.put("figure_id", "2");
+        paramMap.put("contact_id", "1");
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
 
         MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.get("/contact/figure/pro/list")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID",deviceId)
-                        .header("X-XN-SID",sid)
+                MockMvcRequestBuilders.get("/contact/figure/contact/info")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
-                        .param("figureId", "1")
+                        .param("figure_id", "1")
+                        .param("contact_id", "1")
+                        .param("app_key", Constants.APP_KEY)
+                        .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
+
+        MvcResult result = mockMvc.perform(request)
+                .andReturn();
+        String resultContent=result.getResponse().getContentAsString();
+        DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
+        System.out.println(JsonUtils.fromObject(dataResponse));
+        Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
+    }
+
+
+    @Test
+    public void setFigureProListTest() throws Exception {
+        long timestamp=System.currentTimeMillis();
+        String nonce="123456";
+
+        JSONObject jsonObject=new JSONObject();
+
+        JSONArray jsonArray=new JSONArray();
+
+        JSONObject proValue=new JSONObject();
+        proValue.put("prop_id",3);
+        proValue.put("value","新的值2");
+        jsonArray.add(proValue);
+        JSONObject proValue2=new JSONObject();
+        proValue2.put("prop_id",4);
+        proValue2.put("value","new2");
+        jsonArray.add(proValue2);
+
+        jsonObject.put("props",jsonArray);
+        jsonObject.put("contact_id",1);
+        jsonObject.put("figure_id",2);
+        String dataJsonStr=JsonUtils.fromObject(jsonObject);
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("nonce", nonce);
+        paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("data", dataJsonStr);
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
+
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.get("/contact/figure/contact/update")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
+                        .param("nonce", nonce)
+                        .param("timestamp", String.valueOf(timestamp))
+                        .param("data", dataJsonStr)
+                        .param("app_key", Constants.APP_KEY)
+                        .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
+
+        MvcResult result = mockMvc.perform(request)
+                .andReturn();
+        String resultContent=result.getResponse().getContentAsString();
+        DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
+        System.out.println(JsonUtils.fromObject(dataResponse));
+        Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
+    }
+    @Test
+    public void contactTypeListTest() throws Exception {
+        long timestamp=System.currentTimeMillis();
+        String nonce="123456";
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("nonce", nonce);
+        paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
+
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.get("/contact/type/list/byuser")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
+                        .param("nonce", nonce)
+                        .param("timestamp", String.valueOf(timestamp))
                         .param("app_key", Constants.APP_KEY)
                         .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
 
@@ -112,21 +193,83 @@ public class ContactControllerTest {
     }
 
     @Test
-    public void contactTypeListTest() throws Exception {
+    public void createEventTypeTest() throws Exception {
+        long timestamp=System.currentTimeMillis();
+        String nonce="123456";
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
+        paramMap.put("nonce", nonce);
+        paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("name", "自定义类型");
+
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.get("/contact/type/create")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
+                        .param("nonce", nonce)
+                        .param("timestamp", String.valueOf(timestamp))
+                        .param("name", "自定义类型1")
+                        .param("app_key", Constants.APP_KEY)
+                        .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
+
+        MvcResult result = mockMvc.perform(request)
+                .andReturn();
+        String resultContent=result.getResponse().getContentAsString();
+        DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
+        System.out.println(JsonUtils.fromObject(dataResponse));
+        Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
+    }
+
+    @Test
+    public void deleteEventTypeTest() throws Exception {
+        long timestamp=System.currentTimeMillis();
+        String nonce="123456";
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
+        paramMap.put("nonce", nonce);
+        paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("type_id", "5");
+
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.get("/contact/type/delete")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
+                        .param("nonce", nonce)
+                        .param("timestamp", String.valueOf(timestamp))
+                        .param("type_id","5")
+                        .param("app_key", Constants.APP_KEY)
+                        .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
+
+        MvcResult result = mockMvc.perform(request)
+                .andReturn();
+        String resultContent=result.getResponse().getContentAsString();
+        DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
+        System.out.println(JsonUtils.fromObject(dataResponse));
+        Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
+    }
+
+    @Test
+    public void getContactInfo() throws Exception {
         long timestamp=System.currentTimeMillis();
         String nonce="123456";
 
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("contact_id", "1");
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
 
         MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.get("/contact/type/list/byuser")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID",deviceId)
-                        .header("X-XN-SID",sid)
+                MockMvcRequestBuilders.get("/contact/info")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("nonce", nonce)
+                        .param("contact_id","1")
                         .param("timestamp", String.valueOf(timestamp))
                         .param("app_key", Constants.APP_KEY)
                         .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));

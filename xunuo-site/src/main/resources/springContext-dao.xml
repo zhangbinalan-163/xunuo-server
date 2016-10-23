@@ -33,6 +33,11 @@
 		<property name="minIdle">
 			<value>${db.pool.minidle}</value>
 		</property>
+
+		<property name="testWhileIdle">
+			<value>true</value>
+		</property>
+
 	</bean>
 
 	<!-- 配置SessionFactory -->

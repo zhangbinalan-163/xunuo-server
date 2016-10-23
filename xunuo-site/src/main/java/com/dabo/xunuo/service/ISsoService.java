@@ -60,4 +60,11 @@ public interface ISsoService {
      * @throws SysException
      */
     void resetPassword(String phone,String password,String code) throws SysException;
+
+    /**
+     * 退出登录
+     * @param deviceId
+     * @throws SysException
+     */
+    void logout(String deviceId) throws SysException;
 }

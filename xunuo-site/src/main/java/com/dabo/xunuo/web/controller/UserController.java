@@ -1,8 +1,10 @@
 package com.dabo.xunuo.web.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.dabo.xunuo.entity.User;
 import com.dabo.xunuo.service.IUserService;
+import com.dabo.xunuo.util.TimeUtils;
 import com.dabo.xunuo.web.vo.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,7 +33,13 @@ public class UserController extends BaseController{
         long userId=RequestContext.getUserId();
         //查询用户信息
         User userInfo = userService.getByUserId(userId);
-
-        return createSuccessResponse(userInfo);
+        JSONObject jsonObject=new JSONObject();
+        if(userInfo!=null){
+            jsonObject.put("user_id",userInfo.getId());
+            jsonObject.put("source_type",userInfo.getSource());
+            jsonObject.put("open_id",userInfo.getBindOpenId());
+            jsonObject.put("create_time", TimeUtils.getStr(userInfo.getCreateTime()));
+        }
+        return createSuccessResponse(jsonObject);
     }
 }

@@ -120,4 +120,16 @@ public class SsoController extends BaseController{
 
         return createDefaultSuccessResponse();
     }
+
+    /**
+     * 退出登录
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/logout")
+    @ResponseBody
+    public String logout() throws Exception {
+        ssoService.logout(RequestContext.getDeviceId());
+        return createDefaultSuccessResponse();
+    }
 }

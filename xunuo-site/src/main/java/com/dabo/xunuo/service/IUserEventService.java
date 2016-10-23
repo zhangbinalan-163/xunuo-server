@@ -41,9 +41,64 @@ public interface IUserEventService {
     void createUserEventType(UserEventType userEventType) throws SysException;
 
     /**
+     * 删除用户事件类型
+     * @param userEventType
+     * @throws SysException
+     */
+    void deleteUserEventType(UserEventType userEventType) throws SysException;
+
+    /**
      * 创建用户事件
      * @param userEvent
      * @throws SysException
      */
     void createUserEvent(UserEvent userEvent) throws SysException;
+
+    /**
+     * 获得事件类型
+     * @param userEventTypeId
+     * @return
+     * @throws SysException
+     */
+    UserEventType getUserEventTypeById(long userEventTypeId) throws SysException;
+
+    /**
+     * 创建用户事件
+     * @param userEvent
+     * @throws SysException
+     */
+    void updateUserEvent(UserEvent userEvent) throws SysException;
+
+    /**
+     * 获取用户事件
+     * @param eventId
+     * @return
+     * @throws SysException
+     */
+    UserEvent getUserEventById(long eventId) throws SysException;
+
+
+    /**
+     * 统计类型下有多少事件
+     * @param eventTypeId
+     * @return
+     * @throws SysException
+     */
+    long countByEventType(long eventTypeId) throws SysException;
+
+    /**
+     * 删除联系人的事件
+     *
+     * @param contactId
+     * @throws SysException
+     */
+    void deleteUserEventByContactId(long contactId) throws SysException;
+
+    /**
+     * 获取联系人最近要发生的事
+     * @param contactId
+     * @return
+     * @throws SysException
+     */
+    UserEvent getNeariestEventByContact(long contactId) throws SysException;
 }

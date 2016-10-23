@@ -12,30 +12,58 @@
         <result property="birthday" column="birthday"/>
         <result property="phone" column="phone"/>
         <result property="remark" column="remark"/>
-        <result property="figure_id" column="figure_id"/>
+        <result property="figureId" column="figure_id"/>
+        <result property="contactTypeId" column="contact_type_id"/>
+        <result property="headImg" column="head_img"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createTime" column="create_time"/>
     </resultMap>
-
-
     <!--新增-->
     <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
         INSERT INTO
         <include refid="TABLE"/>
-        (phone,create_time)
+        (name,birthday,phone,remark,figure_id,contact_type_id,head_img,create_time,update_time)
         VALUES
-        (#{entity.phone},#{entity.createTime})
+        (#{entity.name},#{entity.birthday},#{entity.phone},#{entity.remark},#{entity.figureId},#{entity.contactTypeId},#{entity.headImg},#{entity.createTime},#{entity.updateTime})
     </insert>
 
-   <select id="getContactList" resultMap="DATA">
+    <insert id="update" parameterType="com.dabo.xunuo.entity.Contact">
+        INSERT INTO
+        <include refid="TABLE"/>
+        (name,birthday,phone,remark,figure_id,contact_type_id,head_img,update_time)
+        VALUES
+        (#{entity.name},#{entity.birthday},
+        #{entity.phone},#{entity.remark},#{entity.figureId},
+        #{entity.contactTypeId},#{entity.headImg},#{entity.updateTime})
+    </insert>
+
+    <select id="getById" resultMap="DATA">
         SELECT *
         FROM <include refid="TABLE"/>
-        where user_id=#{userId} 
-         <if test="contacttypeid!=null">
-            and contact_type_id=#{contacttypeid} </if>
-        <if test="orderkey!=null">
-               order by ${orderkey} desc </if>
+        WHERE id=#{keyId}
     </select>
 
+    <update id="setUpdateTime">
+        UPDATE <include refid="TABLE"/>
+        SET update_time=#{updateTime}
+        WHERE id=#{contactId}
+    </update>
 
-   
+    <update id="setFigureId">
+        UPDATE <include refid="TABLE"/>
+        SET figure_id=#{figureId},update_time=#{updateTime}
+        WHERE id=#{contactId}
+    </update>
 
+    <select id="countByType" resultType="Long">
+        SELECT COUNT(*)
+        FROM <include refid="TABLE"/>
+        WHERE contact_type_id=#{typeId}
+    </select>
+
+    <delete id="delete">
+        DELETE
+        FROM <include refid="TABLE"/>
+        WHERE id=#{keyId}
+    </delete>
 </mapper>

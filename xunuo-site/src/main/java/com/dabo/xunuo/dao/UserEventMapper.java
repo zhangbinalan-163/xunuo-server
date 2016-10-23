@@ -32,5 +32,35 @@ public interface UserEventMapper extends BaseMapper<Long,UserEvent>{
      * @return
      */
     int countEventByUser(@Param("userId") long userId, @Param("eventTime") long eventTime);
+
+
+    /**
+     * 统计数量
+     * @param contactType
+     * @return
+     */
+    long countByType(@Param("typeId") long contactType);
+
+    /**
+     * 删除联系人关联的事件
+     * @param contactId
+     */
+    void deleteByContactId(@Param("contactId") long contactId);
+
+    /**
+     * 获取联系人的事件
+     * @param contactId
+     * @param eventTime
+     * @param field
+     * @param direction
+     * @param rowBounds
+     * @return
+     */
+    List<UserEvent> getEventByContact(@Param("contactId") long contactId,
+                                   @Param("eventTime") long eventTime,
+                                   @Param("field") String field,
+                                   @Param("direction") String direction,
+                                   @Param("rowBounds") RowBounds rowBounds);
+
 }
 

@@ -32,4 +32,10 @@
         DELETE FROM <include refid="TABLE"/>
         WHERE id=#{keyId}
     </delete>
+
+    <select id="getById" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        WHERE id=#{keyId}
+    </select>
 </mapper>

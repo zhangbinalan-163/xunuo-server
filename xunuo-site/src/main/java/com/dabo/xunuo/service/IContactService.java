@@ -1,9 +1,7 @@
 package com.dabo.xunuo.service;
 
 import com.dabo.xunuo.common.exception.SysException;
-import com.dabo.xunuo.entity.ContactFigure;
-import com.dabo.xunuo.entity.ContactFigurePro;
-import com.dabo.xunuo.entity.ContactType;
+import com.dabo.xunuo.entity.*;
 
 import java.util.List;
 
@@ -36,6 +34,14 @@ public interface IContactService {
 	List<ContactFigurePro> getFigurePro(int figureId) throws SysException;
 
 	/**
+	 * 获取形象详情
+	 * @param figureId
+	 * @return
+	 * @throws SysException
+	 */
+	ContactFigure getContactFigure(int figureId) throws SysException;
+
+	/**
 	 * 删除联系人形象
 	 * @param contactFigure
 	 * @throws SysException
@@ -56,4 +62,80 @@ public interface IContactService {
 	 * @throws SysException
 	 */
 	void createContactType(ContactType contactType) throws SysException;
+
+	/**
+	 * 获取联系人类型
+	 * @param contactTypeId
+	 * @return
+	 * @throws SysException
+	 */
+	ContactType getUserContactTypeById(long contactTypeId) throws SysException;
+
+	/**
+	 * 删除用户联系人类型
+	 * @param contactType
+	 * @throws SysException
+	 */
+	void deleteContactType(ContactType contactType) throws SysException;
+
+	/**
+	 * 获取某个联系人关联的形象的属性值设置
+	 * @param contactId
+	 * @param figureId
+	 * @return
+	 */
+	List<ContactFigureProValue> getFigureProWithValue(long contactId, int figureId)throws SysException;
+
+	/**
+	 * 设置联系人的形象、形象的具体属性值
+	 * @param contactId
+	 * @param figureId
+	 * @throws SysException
+	 */
+	void setContactFigureProValue(long contactId,int figureId,List<ContactFigureProValue> proValueList)throws SysException;
+
+	/**
+	 * 统计类型下有多少联系人
+	 * @param contactType
+	 * @return
+	 * @throws SysException
+	 */
+	long countByContactType(long contactType) throws SysException;
+
+	/**
+	 * 批量新建联系人
+	 * @param contactList
+	 * @throws SysException
+	 */
+	void batchCreateContact(List<Contact> contactList) throws SysException;
+
+	/**
+	 * 新建联系人
+	 * @param contact
+	 * @throws SysException
+	 */
+	void createContact(Contact contact) throws SysException;
+
+	/**
+	 * 修改联系人
+	 * @param contact
+	 * @throws SysException
+	 */
+	void updateContact(Contact contact) throws SysException;
+
+	/**
+	 * 获取联系人详情
+	 * @param contactId
+	 * @return
+	 * @throws SysException
+	 */
+	Contact getContactById(long contactId) throws SysException;
+
+	/**
+	 * 删联系人
+	 * @param contactId
+	 * @return
+	 * @throws SysException
+	 */
+	void deleteContactById(long contactId) throws SysException;
 }

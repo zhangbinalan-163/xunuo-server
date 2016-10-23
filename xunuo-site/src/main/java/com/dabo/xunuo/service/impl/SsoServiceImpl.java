@@ -144,4 +144,9 @@ public class SsoServiceImpl extends BaseSerivce implements ISsoService{
         //登录
         deviceService.userLogin(deviceId,userId);
     }
+
+    @Override
+    public void logout(String deviceId) throws SysException {
+        deviceService.userLogin(deviceId,0);
+    }
 }

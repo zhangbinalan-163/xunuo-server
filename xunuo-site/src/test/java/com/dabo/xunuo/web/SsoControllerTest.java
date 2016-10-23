@@ -151,4 +151,31 @@ public class SsoControllerTest {
         Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
     }
 
+    @Test
+    public void logoutTest() throws Exception {
+        long timestamp=System.currentTimeMillis();
+        String nonce="123456";
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("nonce", nonce);
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
+        paramMap.put("timestamp", String.valueOf(timestamp));
+
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.get("/sso/logout")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
+                        .param("nonce", nonce)
+                        .param("timestamp", String.valueOf(timestamp))
+                        .param("app_key", Constants.APP_KEY)
+                        .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
+        MvcResult result = mockMvc.perform(request)
+                .andReturn();
+        String resultContent=result.getResponse().getContentAsString();
+        DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
+        System.out.println(JsonUtils.fromObject(dataResponse));
+        Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
+    }
+
 }

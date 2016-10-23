@@ -1,14 +1,30 @@
 package com.dabo.xunuo.dao;
 
-import java.util.List;
-
+import com.dabo.xunuo.entity.Contact;
 import org.apache.ibatis.annotations.Param;
 
-import com.dabo.xunuo.entity.Contact;
-import com.dabo.xunuo.entity.RowBounds;
-
+/**
+ * 联系人表MAPPER
+ */
 public interface ContactMapper extends BaseMapper<Long,Contact>{
+    /**
+     * 设置联系人的形象
+     * @param contactId
+     * @param figureId
+     */
+    void setFigureId(@Param("contactId")long contactId,@Param("figureId")int figureId,@Param("updateTime")long updateTime);
 
-	List<Contact>  getContactList(@Param("userId")long userId,@Param("contacttypeid")int contacttypeid,@Param("orderkey")String orderkey,@Param("rowBounds")RowBounds rowBounds);
+    /**
+     * 设置修改时间
+     * @param contactId
+     * @param updateTime
+     */
+    void setUpdateTime(@Param("contactId")long contactId,@Param("updateTime")long updateTime);
 
+    /**
+     * 统计数量
+     * @param contactType
+     * @return
+     */
+    long countByType(@Param("typeId") long contactType);
 }

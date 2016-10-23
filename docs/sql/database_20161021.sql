@@ -1,15 +1,16 @@
 CREATE TABLE `t_contact` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
-  `birthday` date DEFAULT NULL,
+  `birthday` bigint(20) DEFAULT NULL,
   `phone` varchar(11) DEFAULT NULL,
   `remark` varchar(128) DEFAULT NULL,
   `head_img` varchar(128) DEFAULT NULL,
   `figure_id` int(10) DEFAULT NULL COMMENT '形象ID',
   `create_time` bigint(20) DEFAULT NULL,
   `update_time` bigint(20) DEFAULT NULL,
+  `contact_type_id` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `t_contact_figure` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -33,7 +34,7 @@ CREATE TABLE `t_contact_figure_value` (
   `contact_id` int(11) NOT NULL,
   `prop_value` varchar(45) NOT NULL COMMENT '属性值',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `t_contact_pro` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -41,7 +42,7 @@ CREATE TABLE `t_contact_pro` (
   `name` varchar(45) NOT NULL COMMENT '自定义字段名',
   `value` varchar(45) NOT NULL COMMENT '自定义字段值',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `t_contact_type` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -52,7 +53,7 @@ CREATE TABLE `t_contact_type` (
   `create_time` bigint(20) NOT NULL,
   `update_time` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `t_device_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -89,7 +90,7 @@ CREATE TABLE `t_event_type` (
   `create_time` bigint(20) NOT NULL,
   `update_time` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `t_note` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -110,16 +111,17 @@ CREATE TABLE `t_sms_code` (
   `create_time` bigint(20) NOT NULL DEFAULT '0',
   `valid_interval` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `t_user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `source` tinyint(3) NOT NULL DEFAULT '0' COMMENT '注册渠道',
   `phone` char(11) NOT NULL DEFAULT '' COMMENT '绑定的手机',
-  `bind_open_id` varchar(100) NOT NULL DEFAULT '',
+  `bind_open_id` varchar(128) NOT NULL DEFAULT '',
   `create_time` bigint(20) NOT NULL DEFAULT '0',
+  `access_token` varchar(128) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `t_user_certificate` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -128,4 +130,5 @@ CREATE TABLE `t_user_certificate` (
   `salt` int(11) NOT NULL DEFAULT '0',
   `update_time` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+SELECT * FROM d_xunuo.t_event;

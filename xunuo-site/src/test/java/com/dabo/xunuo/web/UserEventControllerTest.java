@@ -53,6 +53,95 @@ public class UserEventControllerTest {
     }
 
     @Test
+    public void createEventTypeTest() throws Exception {
+        long timestamp=System.currentTimeMillis();
+        String nonce="123456";
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
+        paramMap.put("nonce", nonce);
+        paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("name", "自定义类型1");
+
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.get("/event/type/create")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
+                        .param("nonce", nonce)
+                        .param("timestamp", String.valueOf(timestamp))
+                        .param("name", "自定义类型1")
+                        .param("app_key", Constants.APP_KEY)
+                        .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
+
+        MvcResult result = mockMvc.perform(request)
+                .andReturn();
+        String resultContent=result.getResponse().getContentAsString();
+        DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
+        System.out.println(JsonUtils.fromObject(dataResponse));
+        Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
+    }
+
+    @Test
+    public void eventTypeListTest() throws Exception {
+        long timestamp=System.currentTimeMillis();
+        String nonce="123456";
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
+        paramMap.put("nonce", nonce);
+        paramMap.put("timestamp", String.valueOf(timestamp));
+
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.get("/event/type/list/byuser")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
+                        .param("nonce", nonce)
+                        .param("timestamp", String.valueOf(timestamp))
+                        .param("app_key", Constants.APP_KEY)
+                        .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
+
+        MvcResult result = mockMvc.perform(request)
+                .andReturn();
+        String resultContent=result.getResponse().getContentAsString();
+        DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
+        System.out.println(JsonUtils.fromObject(dataResponse));
+        Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
+    }
+
+    @Test
+    public void deleteEventTypeTest() throws Exception {
+        long timestamp=System.currentTimeMillis();
+        String nonce="123456";
+
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
+        paramMap.put("nonce", nonce);
+        paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("type_id", "5");
+
+        MockHttpServletRequestBuilder request =
+                MockMvcRequestBuilders.get("/event/type/delete")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
+                        .param("nonce", nonce)
+                        .param("timestamp", String.valueOf(timestamp))
+                        .param("type_id","5")
+                        .param("app_key", Constants.APP_KEY)
+                        .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
+
+        MvcResult result = mockMvc.perform(request)
+                .andReturn();
+        String resultContent=result.getResponse().getContentAsString();
+        DataResponse dataResponse = JsonUtils.toObject(resultContent, DataResponse.class);
+        System.out.println(JsonUtils.fromObject(dataResponse));
+        Assert.assertEquals(dataResponse.getErrorCode(), Constants.DEFAULT_CODE_SUCCESS);
+    }
+
+
+    @Test
     public void createEventTest() throws Exception {
         long timestamp=System.currentTimeMillis();
         String nonce="123456";
@@ -70,9 +159,8 @@ public class UserEventControllerTest {
 
         MockHttpServletRequestBuilder request =
                 MockMvcRequestBuilders.get("/event/create")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID",deviceId)
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .header("X-XN-SID",sid)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
@@ -100,6 +188,8 @@ public class UserEventControllerTest {
         String nonce="123456";
 
         Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
         paramMap.put("page", "1");
@@ -107,10 +197,8 @@ public class UserEventControllerTest {
 
         MockHttpServletRequestBuilder request =
                 MockMvcRequestBuilders.get("/event/list/byuser")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID",deviceId)
-                        .header("X-XN-SID",sid)
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
                         .param("page", "1")
@@ -127,24 +215,24 @@ public class UserEventControllerTest {
     }
 
     @Test
-    public void createEventTypeTest() throws Exception {
+    public void eventInfoTest() throws Exception {
         long timestamp=System.currentTimeMillis();
         String nonce="123456";
 
         Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
-        paramMap.put("name", "自定义类型1");
+        paramMap.put("event_id", "6");
 
         MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.get("/event/type/create")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID",deviceId)
-                        .header("X-XN-SID",sid)
+                MockMvcRequestBuilders.get("/event/info")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
-                        .param("name", "自定义类型1")
+                        .param("event_id", "6")
                         .param("app_key", Constants.APP_KEY)
                         .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
 
@@ -157,22 +245,24 @@ public class UserEventControllerTest {
     }
 
     @Test
-    public void eventTypeListTest() throws Exception {
+    public void contactNeariestEvent() throws Exception {
         long timestamp=System.currentTimeMillis();
         String nonce="123456";
 
         Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
+        paramMap.put("contact_id", "1");
 
         MockHttpServletRequestBuilder request =
-                MockMvcRequestBuilders.get("/event/type/list/byuser")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID",deviceId)
-                        .header("X-XN-SID",sid)
+                MockMvcRequestBuilders.get("/event/nearly")
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
+                        .param("contact_id", "1")
                         .param("app_key", Constants.APP_KEY)
                         .param("sign", SignUtils.generateSign(paramMap, Constants.APP_KEY, Constants.APP_SECRET));
 

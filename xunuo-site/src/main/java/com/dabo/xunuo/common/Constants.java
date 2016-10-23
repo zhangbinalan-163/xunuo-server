@@ -33,7 +33,12 @@ public class Constants {
     public static final int ERROR_CODE_REG_OPENID_FAIL=40012;
     //错误码,数据已存在
     public static final int ERROR_CODE_DATA_EXSIST=40013;
-
+    //错误码,请求数据不存在
+    public static final int ERROR_CODE_DATA_NOT_EXSIST=40014;
+    //错误码,请求数据无权限
+    public static final int ERROR_CODE_DATA_NO_RIGHT=40015;
+    //错误码,有数据不允许删除
+    public static final int ERROR_CODE_HAS_DATA=40016;
     //APP的KEY,签名会用
     public static final String APP_KEY="dabo_app_xunuo";
     //APP的SECRET,签名会用

@@ -22,7 +22,6 @@ import java.util.List;
  */
 @Service
 public class UserEventServiceImpl implements IUserEventService{
-
     @Autowired
     private UserEventMapper userEventMapper;
 
@@ -101,5 +100,55 @@ public class UserEventServiceImpl implements IUserEventService{
         userEvent.setUpdateTime(currentTime);
 
         userEventMapper.insert(userEvent);
+    }
+
+    @Override
+    public UserEventType getUserEventTypeById(long userEventTypeId) throws SysException {
+        return userEventTypeMapper.getById(userEventTypeId);
+    }
+
+    @Override
+    public void deleteUserEventType(UserEventType userEventType) throws SysException {
+        userEventTypeMapper.delete(userEventType.getId());
+    }
+
+    @Override
+    public void updateUserEvent(UserEvent userEvent) throws SysException {
+        userEvent.setUpdateTime(System.currentTimeMillis());
+
+        userEventMapper.update(userEvent);
+    }
+
+    @Override
+    public UserEvent getUserEventById(long eventId) throws SysException {
+        return userEventMapper.getById(eventId);
+    }
+
+    @Override
+    public long countByEventType(long eventTypeId) throws SysException {
+        return userEventMapper.countByType(eventTypeId);
+    }
+
+    @Override
+    public void deleteUserEventByContactId(long contactId) throws SysException {
+        userEventMapper.deleteByContactId(contactId);
+    }
+
+    @Override
+    public UserEvent getNeariestEventByContact(long contactId) throws SysException {
+        Calendar calendar=Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY,0);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+        long todayDate = calendar.getTimeInMillis();
+
+        RowBounds rowBounds=new RowBounds(1,1);
+
+        List<UserEvent> eventList = userEventMapper.getEventByContact(contactId, todayDate, "event_time", "asc" , rowBounds);
+        if(!CollectionUtils.isEmpty(eventList)){
+            return eventList.get(0);
+        }
+        return null;
     }
 }

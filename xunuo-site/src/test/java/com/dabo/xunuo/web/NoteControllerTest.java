@@ -45,7 +45,6 @@ public class NoteControllerTest {
     private String deviceId="my_device_id";
     private String clientType="IOS";
     private String version="1.1.1";
-    private String sid="KM4VgBDmOx1lRtwL8nG5+9wcvAny8agueu+63eU/Muc=";
 
     @Before
     public void setUp() {
@@ -58,6 +57,8 @@ public class NoteControllerTest {
         String nonce="123456";
 
         Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
         paramMap.put("title", "title");
@@ -65,10 +66,8 @@ public class NoteControllerTest {
 
         MockHttpServletRequestBuilder request =
                 MockMvcRequestBuilders.get("/note/publish")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID",deviceId)
-                        .header("X-XN-SID",sid)
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
                         .param("title", "title")
@@ -90,6 +89,8 @@ public class NoteControllerTest {
         String nonce="123456";
 
         Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("device_id", deviceId);
+        paramMap.put("client_type", clientType+"_"+version);
         paramMap.put("nonce", nonce);
         paramMap.put("timestamp", String.valueOf(timestamp));
         paramMap.put("page", "1");
@@ -97,10 +98,8 @@ public class NoteControllerTest {
 
         MockHttpServletRequestBuilder request =
                 MockMvcRequestBuilders.get("/note/list/byuser")
-                        .header("X-XN-CLIENT", clientType)
-                        .header("X-XN-CLIENT-V",version)
-                        .header("X-XN-DEVICEID",deviceId)
-                        .header("X-XN-SID",sid)
+                        .param("client_type", clientType+"_"+version)
+                        .param("device_id", deviceId)
                         .param("nonce", nonce)
                         .param("timestamp", String.valueOf(timestamp))
                         .param("page", "1")
