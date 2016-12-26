@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dabo.xunuo.base.dao.UserCertificateMapper">
+
+    <sql id="TABLE">t_user_certificate</sql>
+
+    <resultMap id="DATA" type="com.dabo.xunuo.base.entity.UserCertificate">
+        <id property="id" column="id" />
+        <result property="userId" column="user_id"/>
+        <result property="password" column="password"/>
+        <result property="salt" column="salt"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
+        INSERT INTO
+        <include refid="TABLE"/>
+        (user_id,password,salt,update_time)
+        VALUES
+        (#{entity.userId},#{entity.password},#{entity.salt},#{entity.updateTime})
+    </insert>
+
+    <select id="getByUserId" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        where user_id=#{userId}
+    </select>
+
+    <update id="update" parameterType="com.dabo.xunuo.base.entity.UserCertificate">
+        UPDATE
+        <include refid="TABLE"/>
+        SET password=#{password},salt=#{salt},update_time=#{updateTime}
+        WHERE id=#{id}
+    </update>
+</mapper>

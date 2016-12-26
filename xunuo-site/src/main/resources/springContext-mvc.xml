@@ -30,28 +30,28 @@
         <!--跨域过滤器-->
         <mvc:interceptor>
             <mvc:mapping path="/**" />
-            <bean class="com.dabo.xunuo.web.filter.CorsFilter"/>
+            <bean class="com.dabo.xunuo.app.web.filter.CorsFilter"/>
         </mvc:interceptor>
 
         <!--请求统计过滤器-->
         <mvc:interceptor>
             <mvc:mapping path="/**" />
             <mvc:exclude-mapping path="/admin/**"/>
-            <bean class="com.dabo.xunuo.web.filter.RequestStatisFilter"/>
+            <bean class="com.dabo.xunuo.app.web.filter.RequestStatisFilter"/>
         </mvc:interceptor>
 
         <!--解析过滤器-->
         <mvc:interceptor>
             <mvc:mapping path="/**" />
             <mvc:exclude-mapping path="/admin/**"/>
-            <bean class="com.dabo.xunuo.web.filter.RequestParseFilter"/>
+            <bean class="com.dabo.xunuo.app.web.filter.RequestParseFilter"/>
         </mvc:interceptor>
 
         <!--签名检查过滤器-->
         <!--<mvc:interceptor>-->
             <!--<mvc:mapping path="/**" />-->
             <!--<mvc:exclude-mapping path="/admin/**"/>-->
-            <!--<bean class="com.dabo.xunuo.web.filter.SignVerifyFilter"/>-->
+            <!--<bean class="com.dabo.xunuo.app.web.filter.SignVerifyFilter"/>-->
         <!--</mvc:interceptor>-->
 
         <!--权限检查过滤器-->
@@ -60,11 +60,11 @@
             <mvc:mapping path="/note/**"/>
             <mvc:mapping path="/event/**"/>
             <mvc:mapping path="/contact/**"/>
-            <bean class="com.dabo.xunuo.web.filter.LoginFilter"/>
+            <bean class="com.dabo.xunuo.app.web.filter.LoginFilter"/>
         </mvc:interceptor>
 
     </mvc:interceptors>
 
-    <context:component-scan base-package="com.dabo.xunuo.web.controller" />
+    <context:component-scan base-package="com.dabo.xunuo.app.web.controller" />
 
 </beans>

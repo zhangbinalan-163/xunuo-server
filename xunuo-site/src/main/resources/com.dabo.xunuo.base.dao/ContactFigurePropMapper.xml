@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dabo.xunuo.base.dao.ContactFigurePropMapper">
+
+    <sql id="TABLE">t_contact_figure_prop</sql>
+
+    <resultMap id="DATA" type="com.dabo.xunuo.base.entity.ContactFigureProp">
+        <result property="id" column="id"/>
+        <result property="prop" column="prop"/>
+        <result property="value" column="value"/>
+        <result property="contactId" column="contact_id"/>
+        <result property="propType" column="prop_type"/>
+    </resultMap>
+
+    <!--新增-->
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
+        INSERT INTO
+        <include refid="TABLE"/>
+        (prop,value,contact_id,prop_type)
+        VALUES
+        (#{entity.prop},#{entity.value},#{entity.contactId},#{entity.propType})
+    </insert>
+
+    <insert id="insertBatch" parameterType="List">
+        INSERT INTO
+        <include refid="TABLE"/>
+        (prop,value,contact_id,prop_type)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.prop},#{item.value},#{item.contactId},#{item.propType})
+        </foreach>
+    </insert>
+
+    <select id="getByContacts" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        WHERE contact_id IN
+        <foreach item="item" index="index" collection="contactIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="deleteByContact">
+        DELETE FROM <include refid="TABLE"/>
+        WHERE contact_id=#{contactId}
+    </delete>
+</mapper>

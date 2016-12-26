@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dabo.xunuo.base.dao.SmsCodeMapper">
+
+    <sql id="TABLE">t_sms_code</sql>
+
+    <resultMap id="DATA" type="com.dabo.xunuo.base.entity.SmsCode">
+        <id property="id" column="id" />
+        <result property="type" column="type"/>
+        <result property="mobile" column="mobile"/>
+        <result property="code" column="code"/>
+        <result property="createTime" column="create_time"/>
+        <result property="validInterval" column="valid_interval"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
+        INSERT INTO
+        <include refid="TABLE"/>
+        (type,mobile,code,create_time,valid_interval)
+        VALUES
+        (#{entity.type},#{entity.mobile},#{entity.code},#{entity.createTime},#{entity.validInterval})
+    </insert>
+
+    <select id="getByMobile" resultMap="DATA">
+        SELECT *
+        FROM <include refid="TABLE"/>
+        WHERE mobile=#{mobile}
+        and type=#{smsType}
+    </select>
+
+    <delete id="delete" parameterType="Long">
+        DELETE FROM <include refid="TABLE"/>
+        WHERE id=#{keyId}
+    </delete>
+
+    <delete id="deleteBatch">
+        DELETE FROM <include refid="TABLE"/>
+        WHERE id IN
+        <foreach item="item" index="index" collection="keyIdList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="getByValidTime" resultType="Long">
+        SELECT id
+        FROM <include refid="TABLE"/>
+        WHERE create_time + valid_interval <![CDATA[<]]> #{validEndTime}
+    </select>
+
+</mapper>
