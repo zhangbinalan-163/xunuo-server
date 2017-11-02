@@ -34,6 +34,7 @@ import com.dabo.xunuo.base.entity.ContactNextEvent;
 import com.dabo.xunuo.base.entity.ContactProp;
 import com.dabo.xunuo.base.entity.ContactType;
 import com.dabo.xunuo.base.entity.UserEvent;
+import com.dabo.xunuo.base.entity.UserEventClass;
 import com.dabo.xunuo.base.service.IContactService;
 import com.dabo.xunuo.base.service.IUserEventService;
 import com.dabo.xunuo.base.util.StringUtils;
@@ -101,24 +102,27 @@ public class AppContactServiceImpl implements AppContactService {
                 response.setSelf_prop(selfPropList);
             }
             //形象信息
-            Map<Long, ContactFigurePropValues> contactId2ValueMap = contactService.getContactFigurePropValue(Arrays.asList(contactId));
-            ContactFigurePropValues figurePropValue = contactId2ValueMap.get(contactId);
-            if (figurePropValue != null) {
+            if (contactInfo.getFigureId() >= 0) {
                 ContactDetailResponse.FigureWithValue figureWithValue = new ContactDetailResponse.FigureWithValue();
                 figureWithValue.setFigure_id(contactInfo.getFigureId());
-                if (!CollectionUtils.isEmpty(figurePropValue.getFigurePropValueList())) {
-                    List<ContactDetailResponse.FigureProp> defaultList = new ArrayList<>();
-                    figurePropValue.getFigurePropValueList().forEach(contactFigureProp -> {
-                        defaultList.add(conventVo(contactFigureProp));
-                    });
-                    figureWithValue.setDefault_key_values(defaultList);
-                }
-                if (!CollectionUtils.isEmpty(figurePropValue.getSelfPropValueList())) {
-                    List<ContactDetailResponse.FigureProp> selfList = new ArrayList<>();
-                    figurePropValue.getFigurePropValueList().forEach(contactFigureProp -> {
-                        selfList.add(conventVo(contactFigureProp));
-                    });
-                    figureWithValue.setExtra_key_values(selfList);
+                figureWithValue.setFigure_type(contactInfo.getFigureId());
+                Map<Long, ContactFigurePropValues> contactId2ValueMap = contactService.getContactFigurePropValue(Arrays.asList(contactId));
+                ContactFigurePropValues figurePropValue = contactId2ValueMap.get(contactId);
+                if (figurePropValue != null) {
+                    if (!CollectionUtils.isEmpty(figurePropValue.getFigurePropValueList())) {
+                        List<ContactDetailResponse.FigureProp> defaultList = new ArrayList<>();
+                        figurePropValue.getFigurePropValueList().forEach(contactFigureProp -> {
+                            defaultList.add(conventVo(contactFigureProp));
+                        });
+                        figureWithValue.setDefault_key_values(defaultList);
+                    }
+                    if (!CollectionUtils.isEmpty(figurePropValue.getSelfPropValueList())) {
+                        List<ContactDetailResponse.FigureProp> selfList = new ArrayList<>();
+                        figurePropValue.getSelfPropValueList().forEach(contactFigureProp -> {
+                            selfList.add(conventVo(contactFigureProp));
+                        });
+                        figureWithValue.setExtra_key_values(selfList);
+                    }
                 }
                 response.setFigure(figureWithValue);
             }
@@ -131,7 +135,12 @@ public class AppContactServiceImpl implements AppContactService {
                     EventData eventData = new EventData();
                     eventData.setEvent_id(event.getId());
                     eventData.setName(event.getName());
-                    eventData.setDays_remain(TimeUtils.getRemainDays(nextEvent.getTriggerTime()));
+                    eventData.setDays_remain(TimeUtils.getRemainDays(nextEvent.getNextEventTime()));
+                    eventData.setNext_time(TimeUtils.getDateStrWithoutTime(nextEvent.getNextEventTime()));
+                    UserEvent userEventInfo = userEventService.getUserEventById(nextEvent.getEventId());
+                    if (userEventInfo != null) {
+                        eventData.setEvent_time(TimeUtils.getDateStrWithoutTime(userEventInfo.getEventTime()));
+                    }
                     response.setEvent(eventData);
                 }
             }
@@ -142,7 +151,6 @@ public class AppContactServiceImpl implements AppContactService {
     private ContactDetailResponse.FigureProp conventVo(ContactFigureProp contactFigureProp) {
         ContactDetailResponse.FigureProp figureProp = new ContactDetailResponse.FigureProp();
         figureProp.setProp_name(contactFigureProp.getProp());
-        figureProp.setProp_type(contactFigureProp.getPropType());
         figureProp.setProp_value(contactFigureProp.getValue());
         return figureProp;
     }
@@ -192,7 +200,7 @@ public class AppContactServiceImpl implements AppContactService {
                                 if (event != null && eventInfo != null) {
                                     EventData nextEvent = new EventData();
                                     nextEvent.setName(eventInfo.getName());
-                                    nextEvent.setDays_remain(TimeUtils.getRemainDays(event.getTriggerTime()));
+                                    nextEvent.setDays_remain(TimeUtils.getRemainDays(event.getNextEventTime()));
                                     nextEvent.setEvent_id(event.getId());
                                     contactVo.setEvent(nextEvent);
                                 }
@@ -201,7 +209,9 @@ public class AppContactServiceImpl implements AppContactService {
                         });
                     }
                     typeVo.setContacts(contactVoList);
-                    typesVo.add(typeVo);
+                    if (!CollectionUtils.isEmpty(contactVoList)) {
+                        typesVo.add(typeVo);
+                    }
                 });
             }
             response.setTypes(typesVo);
@@ -221,9 +231,11 @@ public class AppContactServiceImpl implements AppContactService {
                 treeSet.add(entry.getValue());
             }
         });
+
+        List<ContactType> typeList = treeSet.stream().collect(Collectors.toList());
         //默认的
-        treeSet.add(ContactType.defaultType());
-        return treeSet.stream().collect(Collectors.toList());
+        typeList.add(ContactType.defaultType());
+        return typeList;
     }
 
     private Map<Integer, List<Contact>> sortContact(List<Contact> allContactList) {
@@ -269,7 +281,8 @@ public class AppContactServiceImpl implements AppContactService {
         }
     }
 
-    private void updateContact(ContactUpdateReq contactUpdateReq) throws SysException {
+    @Override
+    public long updateContact(ContactUpdateReq contactUpdateReq) throws SysException {
         Contact contact = parseContact(contactUpdateReq);
         int contactClassId = contactUpdateReq.getContact_class_id();
         String contactClassName = contactUpdateReq.getContact_class_name();
@@ -285,12 +298,55 @@ public class AppContactServiceImpl implements AppContactService {
         contact.setContactTypeId(contactClassId);
         if (contact.getId() == 0) {
             contactService.createContact(contact);
+            //生成生日事件,修改基础表
+            createUserBirthDayEvent(contact);
         } else {
+            //如果生日改了,删除旧的生日事件,创建新的
+            Contact oldContact = contactService.getContactById(contact.getId());
+            if (oldContact != null && oldContact.getBirthday() != contact.getBirthday()) {
+                UserEvent userEvent = new UserEvent();
+                userEvent.setContactId(oldContact.getId());
+                userEvent.setId(oldContact.getBirthdayEventId());
+                userEvent.setUserId(oldContact.getUserId());
+                userEventService.deleteUserEvent(userEvent);
+
+                UserEvent userBirthEvent = new UserEvent();
+                userBirthEvent.setUserId(contact.getUserId());
+                userBirthEvent.setContactId(contact.getId());
+                userBirthEvent.setEventTime(contact.getBirthday());
+                userBirthEvent.setName("生日");
+                userBirthEvent.setEventClass(5);//固定的写死的生日类型5
+                userBirthEvent.setChineseCalendarFlag(UserEvent.CHINESE_CALENDAR_YES);
+                userBirthEvent.setUserEventClass(userEventService.getEventClass(5));
+
+                userEventService.createUserEvent(userBirthEvent);
+
+                contact.setBirthdayEventId(userBirthEvent.getId());
+            }
             contactService.updateContact(contact);
         }
         //自定义形象
         List<ContactProp> selfPropList = contactUpdateReq.getSelf_prop();
         contactService.setContactProp(contact.getId(), selfPropList);
+
+        return contact.getId();
+    }
+
+    private void createUserBirthDayEvent(Contact contact) throws SysException {
+        UserEvent userEvent = new UserEvent();
+        userEvent.setUserId(contact.getUserId());
+        userEvent.setContactId(contact.getId());
+        userEvent.setEventTime(contact.getBirthday());
+        userEvent.setName("生日");
+        userEvent.setEventClass(5);//固定的写死的生日类型5
+        userEvent.setChineseCalendarFlag(UserEvent.CHINESE_CALENDAR_YES);
+        userEvent.setUserEventClass(userEventService.getEventClass(5));
+
+        userEventService.createUserEvent(userEvent);
+
+        Contact contactInfo = contactService.getContactById(contact.getId());
+        contactInfo.setBirthdayEventId(userEvent.getId());
+        contactService.updateContact(contactInfo);
     }
 
     private Contact parseContact(ContactUpdateReq contactAddEntity) {
@@ -346,5 +402,9 @@ public class AppContactServiceImpl implements AppContactService {
         contactFigurePropValues.setSelfPropValueList(userFigueProps);
         contactFigurePropValues.setFigurePropValueList(defaultFigueProps);
         contactService.setContactFigurePropValue(figurePropReq.getContact_id(), contactFigurePropValues);
+        //修改形象ID
+        if (contact.getFigureId() != figurePropReq.getFigure_type()) {
+            contactService.updateContactFigureId(contact.getId(), figurePropReq.getFigure_type());
+        }
     }
 }

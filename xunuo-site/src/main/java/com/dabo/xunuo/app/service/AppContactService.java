@@ -53,6 +53,11 @@ public interface AppContactService {
     void updateContactBatch(List<ContactUpdateReq> contactUpdateReqList) throws SysException;
 
     /**
+     * 新建或修改联系人
+     */
+    long updateContact(ContactUpdateReq contactUpdateReq) throws SysException;
+
+    /**
      * 修改形象属性信息
      */
     void updateContactFigureProp(FigurePropReq figurePropReq,long currentUser) throws SysException;

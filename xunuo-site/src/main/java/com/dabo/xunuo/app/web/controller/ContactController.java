@@ -1,11 +1,13 @@
 package com.dabo.xunuo.app.web.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dabo.xunuo.app.entity.ContactClassListResponse;
 import com.dabo.xunuo.app.entity.ContactDetailResponse;
 import com.dabo.xunuo.app.entity.ContactListResponse;
 import com.dabo.xunuo.app.service.AppContactService;
 import com.dabo.xunuo.base.common.Constants;
 import com.dabo.xunuo.base.common.exception.SysException;
+import com.dabo.xunuo.base.service.IContactService;
 import com.dabo.xunuo.base.util.JsonUtils;
 import com.dabo.xunuo.base.util.RequestUtils;
 import com.dabo.xunuo.app.entity.ContactUpdateReq;
@@ -31,6 +33,9 @@ public class ContactController extends BaseController {
 
     @Autowired
     private AppContactService appContactService;
+
+    @Autowired
+    private IContactService contactService;
 
     /**
      * 获取联系人类别列表
@@ -111,9 +116,11 @@ public class ContactController extends BaseController {
             throw new SysException("参数格式错误", Constants.ERROR_CODE_INVALID_PARAM);
         }
         contactUpdateReq.setUser_id(userId);
-        appContactService.updateContactBatch(Arrays.asList(contactUpdateReq));
-
-        return createDefaultSuccessResponse();
+        //
+        long contactId=appContactService.updateContact(contactUpdateReq);
+        JSONObject jsonObject=new JSONObject();
+        jsonObject.put("contact_id",contactId);
+        return createSuccessResponse(jsonObject);
     }
 
     /**

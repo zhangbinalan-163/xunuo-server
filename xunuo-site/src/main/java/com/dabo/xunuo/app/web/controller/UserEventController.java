@@ -1,18 +1,7 @@
 package com.dabo.xunuo.app.web.controller;
 
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.dabo.xunuo.app.entity.EventListByUserResponse;
-import com.dabo.xunuo.app.entity.EventUpdateReq;
-import com.dabo.xunuo.app.service.AppEventService;
-import com.dabo.xunuo.base.common.Constants;
-import com.dabo.xunuo.base.common.exception.SysException;
-import com.dabo.xunuo.base.entity.UserEvent;
-import com.dabo.xunuo.base.entity.UserEventClass;
-import com.dabo.xunuo.base.service.IUserEventService;
-import com.dabo.xunuo.base.util.RequestUtils;
-import com.dabo.xunuo.app.web.vo.RequestContext;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +9,20 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.dabo.xunuo.app.entity.EventListByUserResponse;
+import com.dabo.xunuo.app.entity.EventUpdateReq;
+import com.dabo.xunuo.app.service.AppEventService;
+import com.dabo.xunuo.app.web.vo.RequestContext;
+import com.dabo.xunuo.base.common.Constants;
+import com.dabo.xunuo.base.common.exception.SysException;
+import com.dabo.xunuo.base.entity.Contact;
+import com.dabo.xunuo.base.entity.UserEvent;
+import com.dabo.xunuo.base.entity.UserEventClass;
+import com.dabo.xunuo.base.service.IContactService;
+import com.dabo.xunuo.base.service.IUserEventService;
+import com.dabo.xunuo.base.util.RequestUtils;
 
 /**
  * 用户事件相关的controller
@@ -34,6 +36,9 @@ public class UserEventController extends BaseController {
 
     @Autowired
     private AppEventService appEventService;
+
+    @Autowired
+    private IContactService contactService;
 
     /**
      * 获取当前用户的事件列表
@@ -76,6 +81,30 @@ public class UserEventController extends BaseController {
         return createSuccessResponse(response);
     }
 
+    /**
+     * 获取联系人的事件
+     * 按照下一次发生事件排序
+     */
+    @RequestMapping(value = "/list/bycontact")
+    @ResponseBody
+    public String eventListByContact() throws Exception {
+        //当前登录userId
+        long userId = RequestContext.getUserId();
+        long contact_id = RequestUtils.getLong(RequestContext.getNotEmptyParamMap(), "contact_id");
+        Contact contactInfo = contactService.getContactById(contact_id);
+        if(contactInfo==null){
+            throw new SysException("数据不存在", Constants.ERROR_CODE_DATA_NOT_EXSIST);
+        }
+        if(contactInfo.getUserId()!=userId){
+            throw new SysException("无权限", Constants.ERROR_CODE_DATA_NO_RIGHT);
+        }
+        int page = RequestUtils.getInt(RequestContext.getNotEmptyParamMap(), "page", 1);
+        int limit = RequestUtils.getInt(RequestContext.getNotEmptyParamMap(), "limit", 10);
+
+        EventListByUserResponse response = appEventService.getEventListByContact(contact_id, page, limit);
+
+        return createSuccessResponse(response);
+    }
     /**
      * 获取当前用户的事件类型
      *

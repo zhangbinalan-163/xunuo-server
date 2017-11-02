@@ -1,6 +1,7 @@
 package com.dabo.xunuo.app.web.controller;
 
 
+import com.dabo.xunuo.app.web.vo.ClientType;
 import com.dabo.xunuo.base.entity.DeviceInfo;
 import com.dabo.xunuo.base.service.IDeviceService;
 import com.dabo.xunuo.app.web.vo.RequestContext;
@@ -32,11 +33,12 @@ public class DeviceController extends BaseController {
     public String regDeviceId() throws Exception {
         //参数的解析与校验
         String deviceId = RequestContext.getDeviceId();
+        ClientType clientType = RequestContext.getClientType();
         //检查是否已经注册
-        DeviceInfo deviceInfo = deviceService.getByDeviceId(deviceId);
+        DeviceInfo deviceInfo = deviceService.getByDeviceId(deviceId, clientType.getId());
         if (deviceInfo == null) {
             //如果不存在,注册一下
-            deviceService.createDevice(deviceId);
+            deviceService.createDevice(deviceId, clientType.getId());
         }
         return createDefaultSuccessResponse();
     }

@@ -15,6 +15,7 @@
         <result property="updateTime" column="update_time"/>
         <result property="createTime" column="create_time"/>
         <result property="eventTime" column="event_time"/>
+        <result property="nextEventTime" column="next_event_time"/>
         <result property="eventClass" column="event_class"/>
         <result property="remindInterval" column="remind_interval"/>
         <result property="remindIntervalUnit" column="remind_interval_unit"/>
@@ -40,21 +41,21 @@
         <include refid="TABLE"/>
         (user_id,name,contact_id,
         update_time,create_time,event_time,event_class,
-        remind_interval,remind_interval_unit,remark,chinese_calendar_flag,state_flag)
+        remind_interval,remind_interval_unit,remark,chinese_calendar_flag,state_flag,next_event_time)
         VALUES
         (#{entity.userId},#{entity.name},#{entity.contactId},
         #{entity.updateTime},#{entity.createTime},#{entity.eventTime},#{entity.eventClass},
-        #{entity.remindInterval},#{entity.remindIntervalUnit},#{entity.remark},#{entity.chineseCalendarFlag},#{entity.stateFlag})
+        #{entity.remindInterval},#{entity.remindIntervalUnit},#{entity.remark},#{entity.chineseCalendarFlag},#{entity.stateFlag},#{entity.nextEventTime})
     </insert>
 
-    <insert id="update" parameterType="com.dabo.xunuo.base.entity.UserEvent">
+    <update id="update" parameterType="com.dabo.xunuo.base.entity.UserEvent">
         update
         <include refid="TABLE"/>
         set
         name=#{name},contact_id=#{contactId},update_time=#{updateTime},event_time=#{eventTime},event_class=#{eventClass},remind_interval=#{remindInterval},
-        remind_interval_unit=#{remindIntervalUnit},remark=#{remark},chinese_calendar_flag=#{chineseCalendarFlag}
+        remind_interval_unit=#{remindIntervalUnit},remark=#{remark},chinese_calendar_flag=#{chineseCalendarFlag},next_event_time=#{nextEventTime}
         where id=#{id}
-    </insert>
+    </update>
 
     <select id="getById" resultMap="DATA">
         SELECT E.*,C.id as class_id,C.user_id as class_user_id,C.name as class_name,C.source_type as
@@ -101,24 +102,62 @@
         </foreach>
     </select>
 
-    <insert id="setStateByContact">
+    <update id="setState">
         UPDATE
         <include refid="TABLE"/>
         SET state_flag=#{state},update_time=#{updateTime}
-        WHERE contact_id=#{contactId}
-    </insert>
+        WHERE id IN
+        <foreach item="item" index="index" collection="eventIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="setNextEventTime">
+        UPDATE
+        <include refid="TABLE"/>
+        SET next_event_time=#{nextTime},update_time=#{updateTime}
+        WHERE id =#{eventId}
+    </update>
 
     <select id="getAllEventByContact" resultMap="DATA">
-        SELECT *
+        SELECT E.*,C.id as class_id,C.user_id as class_user_id,C.name as class_name,C.source_type as
+        class_source_type,C.sort_index as class_sort_index,
+        C.update_time as class_update_time,C.create_time as class_create_time,C.bigday_flag as
+        class_bigday_flag,C.type_class as class_class_type
         FROM
         <include refid="TABLE"/>
-        WHERE contact_id=#{contactId} AND state_flag=#{state}
+        AS E LEFT JOIN
+        <include refid="EVENT_CLASS_TABLE"/>
+        AS C
+        ON E.event_class=C.id
+        WHERE E.contact_id=#{contactId} AND E.state_flag=#{state}
     </select>
 
-    <insert id="setState">
-        UPDATE
+    <select id="getAllEventByUser" resultMap="DATA">
+        SELECT E.*,C.id as class_id,C.user_id as class_user_id,C.name as class_name,C.source_type as
+        class_source_type,C.sort_index as class_sort_index,
+        C.update_time as class_update_time,C.create_time as class_create_time,C.bigday_flag as
+        class_bigday_flag,C.type_class as class_class_type
+        FROM
         <include refid="TABLE"/>
-        SET state_flag=#{state},update_time=#{updateTime}
-        WHERE id=#{eventId}
-    </insert>
+        AS E LEFT JOIN
+        <include refid="EVENT_CLASS_TABLE"/>
+        AS C
+        ON E.event_class=C.id
+        WHERE E.user_id=#{userId} AND E.state_flag=#{state}
+    </select>
+
+    <select id="getAllEvent" resultMap="DATA">
+        SELECT E.*,C.id as class_id,C.user_id as class_user_id,C.name as class_name,C.source_type as
+        class_source_type,C.sort_index as class_sort_index,
+        C.update_time as class_update_time,C.create_time as class_create_time,C.bigday_flag as
+        class_bigday_flag,C.type_class as class_class_type
+        FROM
+        <include refid="TABLE"/>
+        AS E LEFT JOIN
+        <include refid="EVENT_CLASS_TABLE"/>
+        AS C
+        ON E.event_class=C.id
+        WHERE E.state_flag=#{state}
+    </select>
 </mapper>

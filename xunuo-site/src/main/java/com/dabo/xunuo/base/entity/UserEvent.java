@@ -1,5 +1,10 @@
 package com.dabo.xunuo.base.entity;
 
+import java.sql.Time;
+import java.util.Date;
+
+import com.dabo.xunuo.base.util.TimeUtils;
+
 /**
  * 用户事件实体
  * Created by zhangbin on 16/8/28.
@@ -27,6 +32,23 @@ public class UserEvent {
     private int remindIntervalUnit;
     private String remark;
     private int stateFlag;
+    private long nextEventTime;
+
+    private String timeDesc;
+
+    public String getTimeDesc() {
+        timeDesc="eventTime=" + TimeUtils.getStr(eventTime) + ",nextEventTime=" + TimeUtils.getStr(nextEventTime);
+        return timeDesc;
+    }
+
+
+    public long getNextEventTime() {
+        return nextEventTime;
+    }
+
+    public void setNextEventTime(long nextEventTime) {
+        this.nextEventTime = nextEventTime;
+    }
 
     public int getStateFlag() {
         return stateFlag;

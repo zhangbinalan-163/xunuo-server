@@ -1,10 +1,12 @@
 package com.dabo.xunuo.app.web.filter;
 
+import com.dabo.xunuo.app.web.vo.ClientType;
 import com.dabo.xunuo.base.common.Constants;
 import com.dabo.xunuo.base.common.exception.SysException;
 import com.dabo.xunuo.base.entity.DeviceInfo;
 import com.dabo.xunuo.base.service.IDeviceService;
 import com.dabo.xunuo.app.web.vo.RequestContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +24,10 @@ public class LoginFilter extends BaseFilter {
 
     @Override
     protected boolean beforeExecute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String deviceId=RequestContext.getDeviceId();
-        DeviceInfo deviceInfo = deviceService.getByDeviceId(deviceId);
-        if(deviceInfo!=null&&deviceInfo.getLoginUserId()!=0&&inTimeValid(deviceInfo.getLoginTime())){
+        String deviceId = RequestContext.getDeviceId();
+        ClientType clientType = RequestContext.getClientType();
+        DeviceInfo deviceInfo = deviceService.getByDeviceId(deviceId, clientType.getId());
+        if (deviceInfo != null && deviceInfo.getLoginUserId() != 0 && inTimeValid(deviceInfo.getLoginTime())) {
             RequestContext.setUserId(deviceInfo.getLoginUserId());
             return true;
         }
@@ -34,6 +37,7 @@ public class LoginFilter extends BaseFilter {
 
     /**
      * 登录是否过期
+     *
      * @param loginTime
      * @return
      */

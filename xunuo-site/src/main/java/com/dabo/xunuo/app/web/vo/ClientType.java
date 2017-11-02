@@ -8,17 +8,18 @@ import com.dabo.xunuo.base.util.StringUtils;
  * 客户端类型枚举类
  */
 public enum ClientType {
-    IPHONE("IOS"), ANDROID("ANDROID");
+    IPHONE(1, "IOS"), ANDROID(2, "ANDROID");
 
-
+    private int id;
     private String name;
 
-    ClientType(String name) {
+    ClientType(int id, String name) {
+        this.id = id;
         this.name = name;
     }
 
     public static ClientType getInstance(String name) throws SysException {
-        if(StringUtils.isEmpty(name)){
+        if (StringUtils.isEmpty(name)) {
             throw new SysException("HEADER缺失", Constants.ERROR_CODE_INVALID_PARAM);
         }
         if (name.equals(IPHONE.getName())) {
@@ -32,5 +33,9 @@ public enum ClientType {
 
     public String getName() {
         return name;
+    }
+
+    public int getId() {
+        return id;
     }
 }

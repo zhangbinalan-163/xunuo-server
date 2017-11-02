@@ -1,14 +1,14 @@
 package com.dabo.xunuo.base.service;
 
+import java.util.List;
+import java.util.Map;
+
 import com.dabo.xunuo.base.common.exception.SysException;
 import com.dabo.xunuo.base.entity.ContactNextEvent;
 import com.dabo.xunuo.base.entity.PageData;
 import com.dabo.xunuo.base.entity.UserEvent;
 import com.dabo.xunuo.base.entity.UserEventClass;
-import com.dabo.xunuo.base.entity.UserEventNextTrigger;
-
-import java.util.List;
-import java.util.Map;
+import com.dabo.xunuo.base.entity.UserEventNextNotice;
 
 /**
  * 用户事件业务接口
@@ -96,21 +96,40 @@ public interface IUserEventService {
     Map<Long, ContactNextEvent> getContactNextEvent(List<Long> contactIds);
 
     /**
-     * 计算事件的最近一个发生时间
-     */
-    ContactNextEvent calculateNextEventByEvent(UserEvent userEvent);
-
-    /**
      * 计算联系人的最近一个事件
      */
     ContactNextEvent getNextEventByContact(long contactId);
 
     /**
-     * 获取列表,按照事件倒序
-     */
-    PageData<UserEventNextTrigger> getEventNextTriggerList(long userId, int page, int limit);
-
-    /**
      */
     UserEventClass getEventClass(int eventClassId);
+
+    /**
+     * 获取用户事件列表
+     */
+    List<UserEventNextNotice> getEventNextNoticeList(long startTime, long endTime);
+
+    /**
+     * 全部事件
+     */
+    PageData<UserEvent> getUserEventByUser(long userId, int page, int limit) throws SysException;
+
+    /**
+     * 全部事件
+     */
+    PageData<UserEvent> getUserEventByContact(long contactId, int page, int limit) throws SysException;
+
+    /**
+     * 获取全部的事件
+     */
+    List<UserEvent> getAllUserEvent() throws SysException;
+
+    /**
+     * 更新事件的下一次发生时间
+     */
+    void updateEventNextTime(UserEvent userEvent);
+
+    void updateContactNextTime(long contactId);
+
+    void updateEventNextNoticeTime(UserEvent userEvent);
 }

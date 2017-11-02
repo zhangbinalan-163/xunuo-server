@@ -56,7 +56,7 @@ public class SmsServiceImpl extends BaseSerivce implements ISmsService {
         req.setSmsFreeSignName("许诺");
         req.setSmsParamString("{\"code\":\""+code+"\",\"time\":\""+(timeInterval/60000)+"\"}");
         req.setRecNum(mobile);
-        req.setSmsTemplateCode("SMS_21365018");
+        req.setSmsTemplateCode("SMS_63880295");
         AlibabaAliqinFcSmsNumSendResponse rsp = null;
         try {
             rsp = client.execute(req);

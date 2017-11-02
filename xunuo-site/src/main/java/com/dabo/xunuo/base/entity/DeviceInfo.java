@@ -7,9 +7,18 @@ package com.dabo.xunuo.base.entity;
 public class DeviceInfo {
     private long id;
     private String deviceId;
+    private int deviceTypeId;
     private long createTime;
     private long loginUserId;//当前登录的用户
     private long loginTime;//用户最近登录时间
+
+    public int getDeviceTypeId() {
+        return deviceTypeId;
+    }
+
+    public void setDeviceTypeId(int deviceTypeId) {
+        this.deviceTypeId = deviceTypeId;
+    }
 
     public long getId() {
         return id;

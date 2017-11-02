@@ -37,7 +37,12 @@
 		<property name="testWhileIdle">
 			<value>true</value>
 		</property>
-
+		<property name="validationQuery">
+			<value>select 1</value>
+		</property>
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>3600000</value>
+		</property>
 	</bean>
 
 	<!-- 配置SessionFactory -->

@@ -19,4 +19,11 @@ public interface AppEventService {
      * 按照下一次发生时间倒序排序
      */
     EventListByUserResponse getEventList(long userId, int page, int limit) throws SysException;
+
+
+    /**
+     * 获取联系人的事件列表
+     * 按照下一次发生时间倒序排序
+     */
+    EventListByUserResponse getEventListByContact(long contactId, int page, int limit) throws SysException;
 }

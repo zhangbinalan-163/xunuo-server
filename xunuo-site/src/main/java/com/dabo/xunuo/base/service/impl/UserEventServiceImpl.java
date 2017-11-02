@@ -1,34 +1,30 @@
 package com.dabo.xunuo.base.service.impl;
 
-import com.dabo.xunuo.base.common.exception.SysException;
-import com.dabo.xunuo.base.dao.ContactNextEventMapper;
-import com.dabo.xunuo.base.dao.UserEventNextTriggerMapper;
-import com.dabo.xunuo.base.entity.ContactNextEvent;
-import com.dabo.xunuo.base.entity.PageData;
-import com.dabo.xunuo.base.entity.UserEvent;
-import com.dabo.xunuo.base.entity.UserEventNextTrigger;
-import com.dabo.xunuo.base.service.IContactService;
-import com.dabo.xunuo.base.dao.UserEventMapper;
-import com.dabo.xunuo.base.dao.UserEventClassMapper;
-import com.dabo.xunuo.base.entity.Contact;
-import com.dabo.xunuo.base.entity.RowBounds;
-import com.dabo.xunuo.base.entity.UserEventClass;
-import com.dabo.xunuo.base.service.IUserEventService;
-import com.dabo.xunuo.base.util.TimeUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.dabo.xunuo.base.common.exception.SysException;
+import com.dabo.xunuo.base.dao.ContactNextEventMapper;
+import com.dabo.xunuo.base.dao.UserEventClassMapper;
+import com.dabo.xunuo.base.dao.UserEventMapper;
+import com.dabo.xunuo.base.dao.UserEventNextNoticeMapper;
+import com.dabo.xunuo.base.entity.Contact;
+import com.dabo.xunuo.base.entity.ContactNextEvent;
+import com.dabo.xunuo.base.entity.PageData;
+import com.dabo.xunuo.base.entity.UserEvent;
+import com.dabo.xunuo.base.entity.UserEventClass;
+import com.dabo.xunuo.base.entity.UserEventNextNotice;
+import com.dabo.xunuo.base.service.IUserEventService;
+import com.dabo.xunuo.base.util.PageUtils;
+import com.dabo.xunuo.base.util.TimeUtils;
 
 /**
  * 用户事件业务基础实现
@@ -46,7 +42,7 @@ public class UserEventServiceImpl implements IUserEventService {
     private ContactNextEventMapper contactNextEventMapper;
 
     @Autowired
-    private UserEventNextTriggerMapper userEventNextTriggerMapper;
+    private UserEventNextNoticeMapper userEventNextNoticeMapper;
 
     @Override
     public List<UserEventClass> getUserEventClass(long userId) throws SysException {
@@ -93,73 +89,86 @@ public class UserEventServiceImpl implements IUserEventService {
         long currentTime = System.currentTimeMillis();
         userEvent.setCreateTime(currentTime);
         userEvent.setUpdateTime(currentTime);
-
+        //计算下一次事件的时间
+        long nextEventTime = getEventNextTime(userEvent);
+        userEvent.setNextEventTime(nextEventTime);
         userEventMapper.insert(userEvent);
-        //联系人下一次触发时间
-        if (userEvent.getContactId() != 0) {
-            reCalculateContactNextEvent(userEvent.getContactId(), userEvent);
-        }
-        //用户事件下一次触发时间
-        UserEventNextTrigger userEventNextTrigger = calculateNextTrigger(userEvent);
-        userEventNextTriggerMapper.insert(userEventNextTrigger);
+        //联系人下一次事件的时间
+        updateContactNextEvent(userEvent.getContactId());
+        //下一个提醒时间
+        updateEventNoticeTime(userEvent);
     }
 
-    private void reCalculateContactNextEvent(long contactId, UserEvent userEvent) {
-        ContactNextEvent contactNextEvent = calculateNextEventByEvent(userEvent);
-        //当前记录的最近一次事件
-        ContactNextEvent currentNextEevent = getNextEventByContact(contactId);
-        if (currentNextEevent != null) {
-            if (currentNextEevent.getTriggerTime() > contactNextEvent.getTriggerTime()) {
-                contactNextEventMapper.delete(currentNextEevent.getId());
-                //下一次事件计算
+    //计算下一次提醒时间
+    private void updateEventNoticeTime(UserEvent userEvent) {
+        UserEventNextNotice userEventNextNotice = new UserEventNextNotice();
+        userEventNextNotice.setEventId(userEvent.getId());
+        userEventNextNotice.setUpdateTime(System.currentTimeMillis());
+        userEventNextNotice.setUserId(userEvent.getUserId());
+        //下一次提醒时间
+        long nextNoticeTime = getEventNextNoticeTime(userEvent);
+        userEventNextNotice.setTimeFlag(nextNoticeTime == userEvent.getNextEventTime() ? UserEventNextNotice.EVENT_TIME : UserEventNextNotice.NOTICE_TIME);
+        userEventNextNotice.setNoticeTime(nextNoticeTime);
+
+        userEventNextNoticeMapper.deleteByEventId(userEvent.getId());
+        if (nextNoticeTime > System.currentTimeMillis()) {
+            userEventNextNoticeMapper.insert(userEventNextNotice);
+        }
+    }
+
+
+    private void updateContactNextEvent(long contactId) {
+        if (contactId != 0) {
+            //删除旧的
+            ContactNextEvent oldNext = getNextEventByContact(contactId);
+            if (oldNext != null) {
+                contactNextEventMapper.delete(oldNext.getId());
+            }
+            //获取联系人的全部事件
+            List<UserEvent> allEventList = userEventMapper.getAllEventByContact(contactId, UserEvent.STATE_NORMAL);
+            if (!CollectionUtils.isEmpty(allEventList)) {
+                List<UserEvent> eventList = new ArrayList<>();
+                allEventList.forEach(userEvent -> {
+                    if (userEvent.getNextEventTime() > System.currentTimeMillis()) {
+                        eventList.add(userEvent);
+                    }
+                });
+                if (eventList.isEmpty()) {
+                    return;
+                }
+                eventList.sort((a, b) -> (int) (a.getNextEventTime() - b.getNextEventTime()));
+                UserEvent event = eventList.get(0);
+
+                ContactNextEvent contactNextEvent = new ContactNextEvent();
+                contactNextEvent.setNextEventTime(event.getNextEventTime());
+                contactNextEvent.setContactId(event.getContactId());
+                contactNextEvent.setEventId(event.getId());
+                contactNextEvent.setUpdateTime(System.currentTimeMillis());
                 contactNextEventMapper.insert(contactNextEvent);
             }
-        } else {
-            contactNextEventMapper.insert(contactNextEvent);
-        }
-    }
-
-    private void reCalculateContactNextEvent(long contactId) {
-        //当前记录的最近一次事件
-        ContactNextEvent currentNextEevent = getNextEventByContact(contactId);
-        if (currentNextEevent != null) {
-            contactNextEventMapper.delete(currentNextEevent.getId());
-        }
-        //获取用户全部事件
-        List<UserEvent> allEventList = userEventMapper.getAllEventByContact(contactId, UserEvent.STATE_NORMAL);
-        ContactNextEvent newNextEvent = new ContactNextEvent();
-        newNextEvent.setTriggerTime(Long.MAX_VALUE);
-        if (!CollectionUtils.isEmpty(allEventList)) {
-            for (UserEvent userEvent : allEventList) {
-                ContactNextEvent tmpNextEvent = calculateNextEventByEvent(userEvent);
-                if (userEvent.getEventTime() > System.currentTimeMillis() && tmpNextEvent.getTriggerTime() < newNextEvent.getTriggerTime()) {
-                    newNextEvent = tmpNextEvent;
-                }
-            }
-        }
-        if (newNextEvent.getTriggerTime() != Long.MAX_VALUE) {
-            contactNextEventMapper.insert(newNextEvent);
         }
     }
 
     @Override
     public void updateUserEvent(UserEvent userEvent, UserEvent oldUserEvent) throws SysException {
-        //先修改数据
+
         userEvent.setUpdateTime(System.currentTimeMillis());
+        long nextEventTime = getEventNextTime(userEvent);
+        userEvent.setNextEventTime(nextEventTime);
         userEventMapper.update(userEvent);
+
         //联系人下一次数据
         long contactId = userEvent.getContactId();
         long oldContactId = oldUserEvent.getContactId();
         if (oldContactId != 0) {
-            reCalculateContactNextEvent(oldContactId);
+            updateContactNextEvent(oldContactId);
         }
         if (oldContactId != 0 && contactId != oldContactId) {
-            reCalculateContactNextEvent(oldContactId);
+            updateContactNextEvent(oldContactId);
         }
-        UserEventNextTrigger nextTrigger = calculateNextTrigger(userEvent);
-        //用户事件下一次触发时间
-        userEventNextTriggerMapper.deleteByEventId(userEvent.getId());
-        userEventNextTriggerMapper.insert(nextTrigger);
+
+        //下一个提醒时间
+        updateEventNoticeTime(userEvent);
     }
 
     @Override
@@ -169,17 +178,17 @@ public class UserEventServiceImpl implements IUserEventService {
 
     @Override
     public void deleteUserEventByContactId(long contactId) throws SysException {
-        //
+
         List<UserEvent> allEventList = userEventMapper.getAllEventByContact(contactId, Contact.STATE_NORMAL);
         if (!CollectionUtils.isEmpty(allEventList)) {
             List<Long> userEventIds = new ArrayList<>();
             allEventList.forEach(userEvent -> userEventIds.add(userEvent.getId()));
-            userEventNextTriggerMapper.deleteByEventIds(userEventIds);
+            userEventNextNoticeMapper.deleteByEventIds(userEventIds);
+            //设置事件状态
+            userEventMapper.setState(userEventIds, UserEvent.STATE_DELETE, System.currentTimeMillis());
         }
         //删除下一个发生的事件
         contactNextEventMapper.deleteByContact(contactId);
-        //设置事件状态
-        userEventMapper.setStateByContact(contactId, UserEvent.STATE_DELETE, System.currentTimeMillis());
     }
 
     @Override
@@ -203,12 +212,11 @@ public class UserEventServiceImpl implements IUserEventService {
     @Override
     public void deleteUserEvent(UserEvent userEvent) {
         //设置状态
-        userEventMapper.setStateByContact(userEvent.getId(), UserEvent.STATE_DELETE, System.currentTimeMillis());
-        //清理最后一次
-        if (userEvent.getContactId() != 0) {
-            reCalculateContactNextEvent(userEvent.getContactId());
-        }
-        userEventNextTriggerMapper.deleteByEventId(userEvent.getId());
+        userEventMapper.setState(Arrays.asList(userEvent.getId()), UserEvent.STATE_DELETE, System.currentTimeMillis());
+        //清理联系人的最后一次时间
+        updateContactNextEvent(userEvent.getContactId());
+        //清理下一次提醒时间
+        userEventNextNoticeMapper.deleteByEventId(userEvent.getId());
     }
 
     @Override
@@ -234,17 +242,7 @@ public class UserEventServiceImpl implements IUserEventService {
         return contactId2EventMap;
     }
 
-    @Override
-    public ContactNextEvent calculateNextEventByEvent(UserEvent userEvent) {
-        ContactNextEvent contactNextEvent = new ContactNextEvent();
-        contactNextEvent.setTriggerTime(getNextTime(userEvent));
-        contactNextEvent.setContactId(userEvent.getContactId());
-        contactNextEvent.setEventId(userEvent.getId());
-        contactNextEvent.setUpdateTime(System.currentTimeMillis());
-        return contactNextEvent;
-    }
-
-    private long getNextTime(UserEvent userEvent) {
+    private long getEventNextNoticeTime(UserEvent userEvent) {
         long triggerTime = userEvent.getEventTime();
 
         Calendar calendar = Calendar.getInstance();
@@ -254,6 +252,10 @@ public class UserEventServiceImpl implements IUserEventService {
         long currentTimes = calendar.getTimeInMillis();
 
         calendar.setTimeInMillis(userEvent.getEventTime());
+        calendar.set(Calendar.HOUR, 8);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
         int eventMonth = calendar.get(Calendar.MONTH);
         int eventDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
 
@@ -296,7 +298,15 @@ public class UserEventServiceImpl implements IUserEventService {
                 }
                 calendar.set(nextTriggerYear, nextTriggerMonth, nextTriggerDayOfMonth);
                 //提前几天提醒
-                //TODO
+                int remindUnit = userEvent.getRemindIntervalUnit();
+                int remindInterval = userEvent.getRemindInterval();
+                int totalDay = remindInterval;
+                if (remindUnit == UserEvent.REMIND_INTERVAL_TYPE_WEEK) {
+                    totalDay = remindInterval * 7;
+                }
+                if (calendar.getTimeInMillis() - currentTimes > totalDay * 24 * 60 * 60 * 1000) {
+                    calendar.roll(Calendar.DAY_OF_YEAR, totalDay * -1);
+                }
                 triggerTime = calendar.getTimeInMillis();
             } else if (userEventClass.getClassType() == UserEventClass.TYPE_EVERY_YEAR) {
                 if (eventMonth < currentMonth || (eventMonth == currentMonth && eventDayOfMonth < currentDayOfMonth)) {
@@ -319,16 +329,6 @@ public class UserEventServiceImpl implements IUserEventService {
         return triggerTime;
     }
 
-    private UserEventNextTrigger calculateNextTrigger(UserEvent userEvent) {
-        UserEventNextTrigger userEventNextTrigger = new UserEventNextTrigger();
-        userEventNextTrigger.setEventId(userEvent.getId());
-        userEventNextTrigger.setUpdateTime(System.currentTimeMillis());
-        userEventNextTrigger.setUserId(userEvent.getUserId());
-
-        userEventNextTrigger.setTriggerTime(getNextTime(userEvent));
-        return userEventNextTrigger;
-    }
-
     @Override
     public ContactNextEvent getNextEventByContact(long contactId) {
         List<ContactNextEvent> nextEventList = contactNextEventMapper.getByContacts(Arrays.asList(contactId));
@@ -339,22 +339,203 @@ public class UserEventServiceImpl implements IUserEventService {
     }
 
     @Override
-    public PageData<UserEventNextTrigger> getEventNextTriggerList(long userId, int page, int limit) {
-        PageData<UserEventNextTrigger> pageData = new PageData<>();
-        int total = userEventNextTriggerMapper.countByUser(userId);
-        pageData.setTotal(total);
-        int offet = (page - 1) * limit;
-        if (total < offet) {
-            return pageData;
+    public UserEventClass getEventClass(int eventClassId) {
+        return userEventClassMapper.getById(eventClassId);
+    }
+
+    @Override
+    public List<UserEventNextNotice> getEventNextNoticeList(long startTime, long endTime) {
+        return userEventNextNoticeMapper.getByNoticeTime(startTime, endTime);
+    }
+
+    private long getEventNextTime(UserEvent userEvent) {
+        long triggerTime = userEvent.getEventTime();
+
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);//当前时间
+        int currentMonth = calendar.get(Calendar.MONTH);//当前时间
+        int currentDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);//当前时间
+
+        calendar.setTimeInMillis(userEvent.getEventTime());
+        calendar.set(Calendar.HOUR, 8);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+        int eventMonth = calendar.get(Calendar.MONTH);
+        int eventDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        int nextTriggerYear = currentYear;
+        int nextTriggerMonth = currentMonth;
+        int nextTriggerDayOfMonth = eventDayOfMonth;
+
+        //默认就发生一次
+        UserEventClass userEventClass = userEvent.getUserEventClass();
+        if (userEventClass != null && userEventClass.getClassType() != UserEventClass.TYPE_ONLY_ONCE) {
+            if (userEventClass.getClassType() == UserEventClass.TYPE_EVERY_MONTH) {
+                if (currentMonth == 11) {
+                    if (eventDayOfMonth < currentDayOfMonth) {
+                        nextTriggerYear = currentYear + 1;
+                        nextTriggerMonth = 0;
+                    }
+                } else {
+                    if (eventDayOfMonth < currentDayOfMonth) {
+                        nextTriggerMonth = currentMonth + 1;
+                    }
+                }
+                if (eventDayOfMonth == 31) {
+                    if (TimeUtils.has30Day(nextTriggerMonth + 1)) {
+                        nextTriggerDayOfMonth = 30;
+                    } else if (nextTriggerMonth == 1) {
+                        if (TimeUtils.isLeapYear(nextTriggerYear)) {
+                            nextTriggerDayOfMonth = 29;
+                        } else {
+                            nextTriggerDayOfMonth = 28;
+                        }
+                    }
+                } else if (eventDayOfMonth == 30) {
+                    if (nextTriggerMonth == 1) {
+                        if (TimeUtils.isLeapYear(nextTriggerYear)) {
+                            nextTriggerDayOfMonth = 29;
+                        } else {
+                            nextTriggerDayOfMonth = 28;
+                        }
+                    }
+                }
+                calendar.set(nextTriggerYear, nextTriggerMonth, nextTriggerDayOfMonth);
+                triggerTime = calendar.getTimeInMillis();
+            } else if (userEventClass.getClassType() == UserEventClass.TYPE_EVERY_YEAR) {
+                if (eventMonth < currentMonth || (eventMonth == currentMonth && eventDayOfMonth < currentDayOfMonth)) {
+                    nextTriggerYear = currentYear + 1;
+                }
+                //闰年
+                if (eventMonth == 1 && eventDayOfMonth == 29) {
+                    nextTriggerDayOfMonth = 28;
+                }
+                calendar.set(nextTriggerYear, eventMonth, nextTriggerDayOfMonth);
+                triggerTime = calendar.getTimeInMillis();
+            }
         }
-        List<UserEventNextTrigger> dataList = userEventNextTriggerMapper.getByUser(userId, offet, limit);
-        pageData.setData(dataList);
+        return triggerTime;
+    }
+
+    @Override
+    public PageData<UserEvent> getUserEventByUser(long userId, int page, int limit) throws SysException {
+        long currentTime = TimeUtils.todayTime();
+        PageData<UserEvent> pageData = new PageData<>();
+        List<UserEvent> allUserEvent = userEventMapper.getAllEventByUser(userId, UserEvent.STATE_NORMAL);
+        //全部事件
+        if (!CollectionUtils.isEmpty(allUserEvent)) {
+            pageData.setTotal(allUserEvent.size());
+
+            List<UserEvent> allEventListInSort = new ArrayList<>();
+            List<UserEvent> happendEventList = new ArrayList<>();
+            List<UserEvent> notHappendEventList = new ArrayList<>();
+            //只发生一次且已经发生
+            allUserEvent.forEach(userEvent -> {
+                if (userEvent.getNextEventTime() < currentTime) {
+                    happendEventList.add(userEvent);
+                } else {
+                    notHappendEventList.add(userEvent);
+                }
+            });
+            happendEventList.sort((a, b) ->{
+                if(a.getNextEventTime()>b.getNextEventTime()){
+                    return -1;
+                }else if(a.getNextEventTime()<b.getNextEventTime()){
+                    return 1;
+                }else{
+                    return 0;
+                }
+            });
+
+            notHappendEventList.sort((a, b) ->{
+                if(a.getNextEventTime()>b.getNextEventTime()){
+                    return 1;
+                }else if(a.getNextEventTime()<b.getNextEventTime()){
+                    return -1;
+                }else{
+                    return 0;
+                }
+            });
+
+            allEventListInSort.addAll(notHappendEventList);
+            allEventListInSort.addAll(happendEventList);
+            //page
+            List<UserEvent> pageList = PageUtils.pageList(allEventListInSort, page, limit);
+            pageData.setData(pageList);
+        }
         return pageData;
     }
 
     @Override
-    public UserEventClass getEventClass(int eventClassId) {
-        return userEventClassMapper.getById(eventClassId);
+    public List<UserEvent> getAllUserEvent() throws SysException {
+        return userEventMapper.getAllEvent(UserEvent.STATE_NORMAL);
+    }
+
+    @Override
+    public void updateEventNextTime(UserEvent userEvent) {
+        //计算下一次事件的时间
+        long nextEventTime = getEventNextTime(userEvent);
+        userEventMapper.setNextEventTime(userEvent.getId(), nextEventTime, System.currentTimeMillis());
+    }
+
+    @Override
+    public void updateContactNextTime(long contactId) {
+        updateContactNextEvent(contactId);
+    }
+
+    @Override
+    public void updateEventNextNoticeTime(UserEvent userEvent) {
+        updateEventNoticeTime(userEvent);
+    }
+
+    @Override
+    public PageData<UserEvent> getUserEventByContact(long contactId, int page, int limit) throws SysException {
+        long currentTime = TimeUtils.todayTime();
+        PageData<UserEvent> pageData = new PageData<>();
+        List<UserEvent> allUserEvent = userEventMapper.getAllEventByContact(contactId, UserEvent.STATE_NORMAL);
+        //全部事件
+        if (!CollectionUtils.isEmpty(allUserEvent)) {
+            pageData.setTotal(allUserEvent.size());
+
+            List<UserEvent> allEventListInSort = new ArrayList<>();
+            List<UserEvent> happendEventList = new ArrayList<>();
+            List<UserEvent> notHappendEventList = new ArrayList<>();
+            //只发生一次且已经发生
+            allUserEvent.forEach(userEvent -> {
+                if (userEvent.getNextEventTime() < currentTime) {
+                    happendEventList.add(userEvent);
+                } else {
+                    notHappendEventList.add(userEvent);
+                }
+            });
+            happendEventList.sort((a, b) ->{
+                if(a.getNextEventTime()>b.getNextEventTime()){
+                    return -1;
+                }else if(a.getNextEventTime()<b.getNextEventTime()){
+                    return 1;
+                }else{
+                    return 0;
+                }
+            });
+
+            notHappendEventList.sort((a, b) ->{
+                if(a.getNextEventTime()>b.getNextEventTime()){
+                    return 1;
+                }else if(a.getNextEventTime()<b.getNextEventTime()){
+                    return -1;
+                }else{
+                    return 0;
+                }
+            });
+
+            allEventListInSort.addAll(notHappendEventList);
+            allEventListInSort.addAll(happendEventList);
+            //page
+            List<UserEvent> pageList = PageUtils.pageList(allEventListInSort, page, limit);
+            pageData.setData(pageList);
+        }
+        return pageData;
     }
 
 }

@@ -210,7 +210,7 @@ public class ContactServiceImpl implements IContactService {
         //清理旧的
         contactPropMapper.deleteByContact(contactId);
         //插入新的
-        if (CollectionUtils.isEmpty(contactPropList)) {
+        if (!CollectionUtils.isEmpty(contactPropList)) {
             contactPropList.forEach(contactProp -> contactProp.setContactId(contactId));
             contactPropMapper.insertBatch(contactPropList);
         }
@@ -240,5 +240,15 @@ public class ContactServiceImpl implements IContactService {
             dataList.forEach(contact -> dataMap.put(contact.getId(), contact));
         }
         return dataMap;
+    }
+
+    @Override
+    public void updateContactFigureId(long contactId, int figureId) throws SysException {
+        contactMapper.setFigureId(contactId, figureId, System.currentTimeMillis());
+    }
+
+    @Override
+    public List<Contact> getAllContactList(int state) {
+        return contactMapper.getAllByState(state);
     }
 }

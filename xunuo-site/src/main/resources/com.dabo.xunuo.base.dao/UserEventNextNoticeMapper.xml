@@ -2,43 +2,45 @@
 <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dabo.xunuo.base.dao.UserEventNextTriggerMapper">
+<mapper namespace="com.dabo.xunuo.base.dao.UserEventNextNoticeMapper">
 
-    <sql id="TABLE">t_user_event_next</sql>
+    <sql id="TABLE">t_user_event_next_notice</sql>
 
-    <resultMap id="DATA" type="com.dabo.xunuo.base.entity.UserEventNextTrigger">
+    <resultMap id="DATA" type="com.dabo.xunuo.base.entity.UserEventNextNotice">
         <id property="id" column="id"/>
         <result property="userId" column="user_id"/>
         <result property="eventId" column="event_id"/>
-        <result property="triggerTime" column="trigger_time"/>
+        <result property="noticeTime" column="next_notice_time"/>
         <result property="updateTime" column="update_time"/>
+        <result property="timeFlag" column="time_flag"/>
     </resultMap>
 
     <!--新增-->
     <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
         INSERT INTO
         <include refid="TABLE"/>
-        (user_id,event_id,trigger_time,update_time)
+        (user_id,event_id,next_notice_time,update_time,time_flag)
         VALUES
-        (#{entity.userId},#{entity.eventId},#{entity.triggerTime},#{entity.updateTime})
+        (#{entity.userId},#{entity.eventId},#{entity.noticeTime},#{entity.updateTime},#{entity.timeFlag})
     </insert>
 
     <insert id="insertBatch" parameterType="List">
         INSERT INTO
         <include refid="TABLE"/>
-        (user_id,event_id,trigger_time,update_time)
+        (user_id,event_id,next_notice_time,update_time,time_flag)
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.userId},#{item.eventId},#{item.triggerTime},#{item.updateTime})
+            (#{item.userId},#{item.eventId},#{item.noticeTime},#{item.updateTime},#{item.timeFlag})
         </foreach>
     </insert>
 
-    <insert id="update" parameterType="com.dabo.xunuo.base.entity.UserEventNextTrigger">
+    <insert id="update" parameterType="com.dabo.xunuo.base.entity.UserEventNextNotice">
         UPDATE
         <include refid="TABLE"/>
         SET event_id=#{eventId},
-        trigger_time=#{triggerTime},
-        update_time=#{updateTime}
+        next_notice_time=#{noticeTime},
+        update_time=#{updateTime},
+        time_flag=#{timeFlag}
         WHERE id=#{id}
     </insert>
 
@@ -80,19 +82,10 @@
         </foreach>
     </delete>
 
-    <select id="getByUser" resultMap="DATA">
+    <select id="getByNoticeTime" resultMap="DATA">
         SELECT *
         FROM
         <include refid="TABLE"/>
-        WHERE user_id=#{userId}
-        ORDER BY trigger_time ASC
-        LIMIT #{offset},#{limit}
-    </select>
-
-    <select id="countByUser" resultType="Integer">
-        SELECT count(*)
-        FROM
-        <include refid="TABLE"/>
-        WHERE user_id=#{userId}
+        WHERE next_notice_time BETWEEN #{startTime} AND #{endTime}
     </select>
 </mapper>

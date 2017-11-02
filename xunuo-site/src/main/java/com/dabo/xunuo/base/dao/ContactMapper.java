@@ -26,4 +26,15 @@ public interface ContactMapper extends BaseMapper<Long, Contact> {
      * @param updateTime
      */
     void setState(@Param("contactId") long contactId, @Param("state") int state, @Param("updateTime") long updateTime);
+
+    /**
+     * 设置形象ID
+     * @param contactId
+     * @param figureId
+     * @param updateTime
+     */
+    void setFigureId(@Param("contactId") long contactId, @Param("figureId") int figureId, @Param("updateTime") long updateTime);
+
+
+    List<Contact> getAllByState(@Param("state") int state);
 }

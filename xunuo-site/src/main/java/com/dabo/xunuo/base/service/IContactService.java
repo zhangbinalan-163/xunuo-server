@@ -56,6 +56,10 @@ public interface IContactService {
     void updateContact(Contact contact) throws SysException;
 
     /**
+     * 修改形象ID
+     */
+    void updateContactFigureId(long contactId,int figureId) throws SysException;
+    /**
      * 获取联系人详情
      *
      * @param contactId
@@ -104,4 +108,9 @@ public interface IContactService {
      * 获取联系人详情
      */
     Map<Long, Contact> getContactMapByIds(List<Long> contactIds) throws SysException;
+
+    /**
+     * 获取全部联系人信息
+     */
+    List<Contact> getAllContactList(int state);
 }

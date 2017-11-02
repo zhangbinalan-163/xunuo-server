@@ -11,16 +11,11 @@
 
     <!-- 开发环境配置文件 -->
     <beans profile="dev">
-        <context:property-placeholder location="classpath*:spring-dev.properties"/>
-    </beans>
-
-    <!-- 生产环境配置文件 -->
-    <beans profile="production">
-        <context:property-placeholder location="classpath*:spring-production.properties"/>
+        <context:property-placeholder location="classpath*:spring.properties"/>
     </beans>
 
     <beans profile="default">
-        <context:property-placeholder ignore-resource-not-found="true" location="classpath*:spring-dev.properties"/>
+        <context:property-placeholder ignore-resource-not-found="true" location="classpath*:spring.properties"/>
     </beans>
 
 </beans>

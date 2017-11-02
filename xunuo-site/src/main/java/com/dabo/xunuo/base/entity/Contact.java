@@ -19,6 +19,15 @@ public class Contact {
     private long updateTime;
     private long userId;
     private int state;
+    private long birthdayEventId;
+
+    public long getBirthdayEventId() {
+        return birthdayEventId;
+    }
+
+    public void setBirthdayEventId(long birthdayEventId) {
+        this.birthdayEventId = birthdayEventId;
+    }
 
     public long getId() {
         return id;

@@ -13,7 +13,7 @@ public class ContactNextEvent {
     private long id;
     private long contactId;
     private long eventId;
-    private long triggerTime;
+    private long nextEventTime;
     private long updateTime;
 
     public long getId() {
@@ -40,12 +40,12 @@ public class ContactNextEvent {
         this.eventId = eventId;
     }
 
-    public long getTriggerTime() {
-        return triggerTime;
+    public long getNextEventTime() {
+        return nextEventTime;
     }
 
-    public void setTriggerTime(long triggerTime) {
-        this.triggerTime = triggerTime;
+    public void setNextEventTime(long nextEventTime) {
+        this.nextEventTime = nextEventTime;
     }
 
     public long getUpdateTime() {

@@ -22,7 +22,6 @@ import com.dabo.xunuo.base.entity.Contact;
 import com.dabo.xunuo.base.entity.PageData;
 import com.dabo.xunuo.base.entity.UserEvent;
 import com.dabo.xunuo.base.entity.UserEventClass;
-import com.dabo.xunuo.base.entity.UserEventNextTrigger;
 import com.dabo.xunuo.base.service.IContactService;
 import com.dabo.xunuo.base.service.IUserEventService;
 import com.dabo.xunuo.base.util.StringUtils;
@@ -81,35 +80,25 @@ public class AppEventServiceImpl implements AppEventService {
     @Override
     public EventListByUserResponse getEventList(long userId, int page, int limit) throws SysException {
         EventListByUserResponse response = new EventListByUserResponse();
-        //从下一次发生时间表中进行排序过滤
-        PageData<UserEventNextTrigger> pageData = userEventService.getEventNextTriggerList(userId, page, limit);
+        //获取用户的全部事件,按照下一次发生时间排序
+        PageData<UserEvent> pageData = userEventService.getUserEventByUser(userId, page, limit);
         response.setTotal(pageData.getTotal());
 
         List<EventInfoData> infoList = new ArrayList<>();
-        List<UserEventNextTrigger> dataList = pageData.getData();
+        List<UserEvent> dataList = pageData.getData();
         if (!CollectionUtils.isEmpty(dataList)) {
-            List<Long> eventIdList = new ArrayList<>();
-            dataList.forEach(userEventNextTrigger -> eventIdList.add(userEventNextTrigger.getEventId()));
-            Map<Long, UserEvent> eventMap = userEventService.getUserEventByIds(eventIdList);
             //设置联系人
             List<Long> contactIdList = new ArrayList<>();
-            List<Integer> userEventTypeList = new ArrayList<>();
-            eventMap.entrySet().forEach(entry -> {
-                if (entry != null && entry.getValue() != null && entry.getValue().getContactId() != 0) {
-                    contactIdList.add(entry.getValue().getContactId());
-                }
-                if (entry != null && entry.getValue() != null && entry.getValue().getEventClass() != 0) {
-                    userEventTypeList.add(entry.getValue().getEventClass());
+            dataList.forEach(userEvent -> {
+                if (userEvent != null && userEvent.getContactId() != 0) {
+                    contactIdList.add(userEvent.getContactId());
                 }
             });
             Map<Long, Contact> contactId2InfoMap = contactService.getContactMapByIds(contactIdList);
             //设置事件类别
-            dataList.forEach(userEventNextTrigger -> {
-                UserEvent userEvent = eventMap.get(userEventNextTrigger.getEventId());
-                if (userEvent != null) {
-                    EventInfoData eventInfoData = parseEventInfoData(userEvent, userEventNextTrigger.getTriggerTime(), contactId2InfoMap.get(userEvent.getContactId()), userEvent.getUserEventClass());
-                    infoList.add(eventInfoData);
-                }
+            dataList.forEach(userEvent -> {
+                EventInfoData eventInfoData = parseEventInfoData(userEvent, userEvent.getNextEventTime(), contactId2InfoMap.get(userEvent.getContactId()), userEvent.getUserEventClass());
+                infoList.add(eventInfoData);
             });
         }
         response.setData(infoList);
@@ -142,5 +131,33 @@ public class AppEventServiceImpl implements AppEventService {
             eventInfoData.setContactInfo(contactInfo);
         }
         return eventInfoData;
+    }
+
+    @Override
+    public EventListByUserResponse getEventListByContact(long contactId, int page, int limit) throws SysException {
+        EventListByUserResponse response = new EventListByUserResponse();
+        //获取用户的全部事件,按照下一次发生时间排序
+        PageData<UserEvent> pageData = userEventService.getUserEventByContact(contactId, page, limit);
+        response.setTotal(pageData.getTotal());
+
+        List<EventInfoData> infoList = new ArrayList<>();
+        List<UserEvent> dataList = pageData.getData();
+        if (!CollectionUtils.isEmpty(dataList)) {
+            //设置联系人
+            List<Long> contactIdList = new ArrayList<>();
+            dataList.forEach(userEvent -> {
+                if (userEvent != null && userEvent.getContactId() != 0) {
+                    contactIdList.add(userEvent.getContactId());
+                }
+            });
+            Map<Long, Contact> contactId2InfoMap = contactService.getContactMapByIds(contactIdList);
+            //设置事件类别
+            dataList.forEach(userEvent -> {
+                EventInfoData eventInfoData = parseEventInfoData(userEvent, userEvent.getNextEventTime(), contactId2InfoMap.get(userEvent.getContactId()), userEvent.getUserEventClass());
+                infoList.add(eventInfoData);
+            });
+        }
+        response.setData(infoList);
+        return response;
     }
 }

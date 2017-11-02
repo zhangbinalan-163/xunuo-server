@@ -19,6 +19,7 @@
         <result property="createTime" column="create_time"/>
         <result property="userId" column="user_id"/>
         <result property="state" column="state_flag"/>
+        <result property="birthdayEventId" column="birthday_event_id"/>
     </resultMap>
     <!--新增-->
     <insert id="insert" useGeneratedKeys="true" keyColumn="id" keyProperty="entity.id">
@@ -40,16 +41,24 @@
         contact_type_id=#{contactTypeId},
         head_img=#{headImg},
         update_time=#{updateTime},
-        user_id=#{userId}
+        user_id=#{userId},
+        birthday_event_id=#{birthdayEventId}
         WHERE id=#{id}
     </insert>
 
-    <insert id="setState">
+    <update id="setState">
         UPDATE
         <include refid="TABLE"/>
         SET state_flag=#{state},update_time=#{updateTime}
         WHERE id=#{contactId}
-    </insert>
+    </update>
+
+    <update id="setFigureId">
+        UPDATE
+        <include refid="TABLE"/>
+        SET figure_id=#{figureId},update_time=#{updateTime}
+        WHERE id=#{contactId}
+    </update>
 
     <select id="getById" resultMap="DATA">
         SELECT *
@@ -82,4 +91,10 @@
         WHERE user_id =#{userId} and state_flag=#{state}
     </select>
 
+    <select id="getAllByState" resultMap="DATA">
+        SELECT *
+        FROM
+        <include refid="TABLE"/>
+        WHERE state_flag=#{state}
+    </select>
 </mapper>

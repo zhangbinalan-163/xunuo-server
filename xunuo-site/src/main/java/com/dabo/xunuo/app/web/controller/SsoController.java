@@ -1,6 +1,7 @@
 package com.dabo.xunuo.app.web.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dabo.xunuo.app.web.vo.ClientType;
 import com.dabo.xunuo.base.common.exception.SysException;
 import com.dabo.xunuo.base.service.IUserService;
 import com.dabo.xunuo.base.entity.User;
@@ -56,8 +57,9 @@ public class SsoController extends BaseController {
         String password = RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "password").toUpperCase();
         String code = RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "code");
         String deviceId = RequestContext.getDeviceId();
+        ClientType clientType = RequestContext.getClientType();
 
-        ssoService.regUser(phone, password, code, deviceId);
+        ssoService.regUser(phone, password, code, deviceId, clientType.getId());
 
         return createSuccessResponse(getCurrentUser(phone));
     }
@@ -107,11 +109,12 @@ public class SsoController extends BaseController {
     @RequestMapping(value = "/login")
     @ResponseBody
     public String login() throws Exception {
+        ClientType clientType = RequestContext.getClientType();
         //参数的解析与校验
         String phone = RequestUtils.getMobileString(RequestContext.getNotEmptyParamMap(), "phone");
         String password = RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "password").toUpperCase();
         //登录
-        ssoService.login(phone, password, RequestContext.getDeviceId());
+        ssoService.login(phone, password, RequestContext.getDeviceId(), clientType.getId());
         //
         return createSuccessResponse(getCurrentUser(phone));
     }
@@ -138,12 +141,13 @@ public class SsoController extends BaseController {
     @RequestMapping(value = "/login/other")
     @ResponseBody
     public String loginByOther() throws Exception {
+        ClientType clientType = RequestContext.getClientType();
         //参数的解析与校验
         String openId = RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "open_id");
         String accessToken = RequestUtils.getString(RequestContext.getNotEmptyParamMap(), "access_token");
         int sourceType = RequestUtils.getInt(RequestContext.getNotEmptyParamMap(), "source_type");
         //登录
-        ssoService.loginByOther(sourceType, accessToken, openId, RequestContext.getDeviceId());
+        ssoService.loginByOther(sourceType, accessToken, openId, RequestContext.getDeviceId(), clientType.getId());
 
         return createDefaultSuccessResponse();
     }
@@ -157,7 +161,8 @@ public class SsoController extends BaseController {
     @RequestMapping(value = "/logout")
     @ResponseBody
     public String logout() throws Exception {
-        ssoService.logout(RequestContext.getDeviceId());
+        ClientType clientType = RequestContext.getClientType();
+        ssoService.logout(RequestContext.getDeviceId(), clientType.getId());
         return createDefaultSuccessResponse();
     }
 }

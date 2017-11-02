@@ -103,4 +103,12 @@ public class TimeUtils {
         }
         return false;
     }
+
+    public static long todayTime() {
+        Calendar calendar=Calendar.getInstance();
+        calendar.set(Calendar.HOUR,0);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+        return calendar.getTimeInMillis();
+    }
 }

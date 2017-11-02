@@ -10,7 +10,7 @@
         <id property="id" column="id"/>
         <result property="contactId" column="contact_id"/>
         <result property="eventId" column="event_id"/>
-        <result property="triggerTime" column="trigger_time"/>
+        <result property="nextEventTime" column="trigger_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
@@ -20,7 +20,7 @@
         <include refid="TABLE"/>
         (contact_id,event_id,trigger_time,update_time)
         VALUES
-        (#{entity.contactId},#{entity.eventId},#{entity.triggerTime},#{entity.updateTime})
+        (#{entity.contactId},#{entity.eventId},#{entity.nextEventTime},#{entity.updateTime})
     </insert>
 
     <insert id="insertBatch" parameterType="List">
@@ -29,7 +29,7 @@
         (contact_id,event_id,trigger_time,update_time)
         VALUES
         <foreach collection="list" item="item" index="index" separator=",">
-            (#{item.contactId},#{item.eventId},#{item.triggerTime},#{item.updateTime})
+            (#{item.contactId},#{item.eventId},#{item.nextEventTime},#{item.updateTime})
         </foreach>
     </insert>
 
@@ -37,7 +37,7 @@
         UPDATE
         <include refid="TABLE"/>
         SET event_id=#{eventId},
-        trigger_time=#{triggerTime},
+        trigger_time=#{nextEventTime},
         update_time=#{updateTime}
         WHERE id=#{id}
     </insert>

@@ -12,23 +12,23 @@ import java.util.List;
  * @author zhangbinalan
  */
 public class ContactDetailResponse {
-    private long contact_id;
+    private Long contact_id;
     private String head_url;
     private String birth;
     private String phone;
     private String name;
     private String remark;
-    private int contact_class_id;
+    private Integer contact_class_id;
     private String contact_class_name;
     private List<SelfProp> self_prop;
     private FigureWithValue figure;
     private EventData event;
 
-    public long getContact_id() {
+    public Long getContact_id() {
         return contact_id;
     }
 
-    public void setContact_id(long contact_id) {
+    public void setContact_id(Long contact_id) {
         this.contact_id = contact_id;
     }
 
@@ -56,6 +56,14 @@ public class ContactDetailResponse {
         this.phone = phone;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getRemark() {
         return remark;
     }
@@ -64,11 +72,11 @@ public class ContactDetailResponse {
         this.remark = remark;
     }
 
-    public int getContact_class_id() {
+    public Integer getContact_class_id() {
         return contact_class_id;
     }
 
-    public void setContact_class_id(int contact_class_id) {
+    public void setContact_class_id(Integer contact_class_id) {
         this.contact_class_id = contact_class_id;
     }
 
@@ -104,14 +112,6 @@ public class ContactDetailResponse {
         this.event = event;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public static class SelfProp {
         private String name;
         private String value;
@@ -135,6 +135,16 @@ public class ContactDetailResponse {
 
     public static class FigureWithValue {
         private int figure_id;
+        private int figure_type;
+
+        public int getFigure_type() {
+            return figure_type;
+        }
+
+        public void setFigure_type(int figure_type) {
+            this.figure_type = figure_type;
+        }
+
         private List<FigureProp> default_key_values;
         private List<FigureProp> extra_key_values;
 
@@ -164,17 +174,8 @@ public class ContactDetailResponse {
     }
 
     public static class FigureProp {
-        private int prop_type;
         private String prop_name;
         private String prop_value;
-
-        public int getProp_type() {
-            return prop_type;
-        }
-
-        public void setProp_type(int prop_type) {
-            this.prop_type = prop_type;
-        }
 
         public String getProp_name() {
             return prop_name;

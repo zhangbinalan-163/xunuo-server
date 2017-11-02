@@ -29,7 +29,7 @@ public interface ISsoService {
      * @param deviceId
      * @throws SysException
      */
-    void regUser(String phone,String password,String code,String deviceId) throws SysException;
+    void regUser(String phone,String password,String code,String deviceId,int deviceType) throws SysException;
 
     /**
      * 第三方账号登录
@@ -38,7 +38,7 @@ public interface ISsoService {
      * @param openId
      * @throws SysException
      */
-    void loginByOther(int sourceType,String accessToken,String openId, String deviceId) throws SysException;
+    void loginByOther(int sourceType,String accessToken,String openId, String deviceId,int deviceType) throws SysException;
 
     /**
      * 用户名+密码登录
@@ -49,7 +49,7 @@ public interface ISsoService {
      * @return
      * @throws SysException
      */
-    void login(String phone,String password,String deviceId) throws SysException;
+    void login(String phone,String password,String deviceId,int deviceType) throws SysException;
 
     /**
      * 修改密码
@@ -65,5 +65,5 @@ public interface ISsoService {
      * @param deviceId
      * @throws SysException
      */
-    void logout(String deviceId) throws SysException;
+    void logout(String deviceId,int deviceType) throws SysException;
 }

@@ -9,12 +9,24 @@ package com.dabo.xunuo.base.entity;
  *
  * @author apple
  */
-public class UserEventNextTrigger {
+public class UserEventNextNotice {
+    public static final int EVENT_TIME = 0;
+    public static final int NOTICE_TIME = 1;
+
     private long id;
     private long userId;
     private long eventId;
-    private long triggerTime;
+    private long noticeTime;
     private long updateTime;
+    private int timeFlag;
+
+    public int getTimeFlag() {
+        return timeFlag;
+    }
+
+    public void setTimeFlag(int timeFlag) {
+        this.timeFlag = timeFlag;
+    }
 
     public long getId() {
         return id;
@@ -40,12 +52,12 @@ public class UserEventNextTrigger {
         this.eventId = eventId;
     }
 
-    public long getTriggerTime() {
-        return triggerTime;
+    public long getNoticeTime() {
+        return noticeTime;
     }
 
-    public void setTriggerTime(long triggerTime) {
-        this.triggerTime = triggerTime;
+    public void setNoticeTime(long noticeTime) {
+        this.noticeTime = noticeTime;
     }
 
     public long getUpdateTime() {

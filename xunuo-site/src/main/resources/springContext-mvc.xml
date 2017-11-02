@@ -12,6 +12,12 @@
 
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 设置上传文件的最大尺寸 200k -->
+        <property name="maxUploadSize">
+            <value>204800</value>
+        </property>
+        <!--resolveLazily属性启用是为了推迟文件解析，以便在controller中捕获文件大小异常  -->
+        <property name="resolveLazily" value="true"/>
     </bean>
 
     <mvc:annotation-driven>
